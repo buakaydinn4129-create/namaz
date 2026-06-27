@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0a2a1a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Namaz"/>
+<link rel="manifest" id="manifestLink"/>
+<link rel="apple-touch-icon" href="data:image/png;base64,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"/>
+<link rel="icon" type="image/png" href="data:image/png;base64,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"/>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;600;700&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<title>Namaz Vakitleri</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --green-dark:#0a2a1a;--green-mid:#0f3d26;--green-light:#155233;--green-accent:#1a6b3c;
+  --gold:#d4af37;--gold-light:#e8cc6a;--gold-pale:#f5e8a0;
+  --text-white:#f0ece0;--text-muted:#9ab8a4;
+  --card-bg:rgba(21,82,51,0.45);--border:rgba(212,175,55,0.18);
+}
+html,body{height:100%;width:100%;overflow-x:hidden;background:var(--green-dark)}
+body{
+  font-family:'Nunito',sans-serif;color:var(--text-white);min-height:100dvh;
+  display:flex;flex-direction:column;
+  background:radial-gradient(ellipse at 20% 0%,rgba(26,107,60,0.35) 0%,transparent 60%),
+    radial-gradient(ellipse at 80% 100%,rgba(10,42,26,0.8) 0%,transparent 60%),
+    linear-gradient(160deg,#0a2a1a 0%,#0c3320 40%,#0a2a1a 100%);
+}
+.header{
+  background:rgba(10,35,20,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  padding:12px 20px 10px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;
+}
+.header-logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:38px;height:38px}
+.logo-text{font-family:'Scheherazade New',serif;font-size:20px;font-weight:700;color:var(--gold);letter-spacing:0.3px}
+.logo-sub{font-size:10px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:-2px}
+.header-time{text-align:right}
+.clock{font-family:'Nunito',sans-serif;font-size:22px;font-weight:700;color:var(--text-white);letter-spacing:1px}
+.clock-date{font-size:11px;color:var(--text-muted);margin-top:1px}
+.location-bar{
+  background:rgba(21,82,51,0.3);border-bottom:1px solid var(--border);
+  padding:8px 20px;display:flex;align-items:center;justify-content:space-between;
+}
+.location-left{display:flex;align-items:center;gap:7px}
+.loc-name{font-size:13px;font-weight:600;color:var(--text-white)}
+.loc-country{font-size:11px;color:var(--text-muted)}
+.loc-refresh{
+  background:none;border:1px solid var(--border);color:var(--gold);font-size:11px;
+  padding:4px 10px;border-radius:20px;cursor:pointer;font-family:'Nunito',sans-serif;
+  font-weight:600;letter-spacing:0.5px;transition:all .2s;
+}
+.loc-refresh:active{background:rgba(212,175,55,0.1)}
+.main{flex:1;overflow-y:auto;padding:16px 16px 90px;display:flex;flex-direction:column;gap:14px}
+.hero{
+  background:linear-gradient(135deg,rgba(21,82,51,0.7) 0%,rgba(26,107,60,0.4) 100%);
+  border:1px solid rgba(212,175,55,0.25);border-radius:20px;
+  padding:22px 20px 18px;text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;top:-30px;right:-20px;width:120px;height:120px;
+  background:radial-gradient(circle,rgba(212,175,55,0.08) 0%,transparent 70%);border-radius:50%;
+}
+.hero-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+.hero-prayer{font-family:'Scheherazade New',serif;font-size:32px;font-weight:700;color:var(--gold);line-height:1}
+.hero-time{font-size:48px;font-weight:700;color:var(--text-white);letter-spacing:2px;margin:4px 0}
+.hero-countdown{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.2);
+  border-radius:20px;padding:5px 14px;margin-top:8px;
+}
+.countdown-text{font-size:13px;font-weight:600;color:var(--gold-light)}
+.mosque-deco{width:100%;max-width:260px;margin:10px auto 0;opacity:0.13;display:block}
+.hijri-card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
+  padding:14px 18px;display:flex;align-items:center;justify-content:space-between;
+}
+.hijri-arabic{font-family:'Scheherazade New',serif;font-size:22px;color:var(--gold);direction:rtl}
+.hijri-gregorian{font-size:12px;color:var(--text-muted);text-align:right;margin-top:2px}
+.hijri-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
+.prayer-section-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);padding:0 4px}
+.prayer-list{display:flex;flex-direction:column;gap:2px;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.prayer-row{
+  display:flex;align-items:center;padding:14px 18px;
+  border-bottom:1px solid rgba(212,175,55,0.07);transition:background .15s;position:relative;
+}
+.prayer-row:last-child{border-bottom:none}
+.prayer-row.active{background:rgba(212,175,55,0.1)}
+.prayer-row.active::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--gold);border-radius:0 2px 2px 0;
+}
+.prayer-icon-wrap{
+  width:36px;height:36px;border-radius:50%;background:rgba(212,175,55,0.1);
+  display:flex;align-items:center;justify-content:center;margin-right:14px;font-size:17px;flex-shrink:0;
+}
+.prayer-row.active .prayer-icon-wrap{background:rgba(212,175,55,0.22)}
+.prayer-info{flex:1}
+.prayer-name-tr{font-size:15px;font-weight:700;color:var(--text-white)}
+.prayer-name-ar{font-family:'Scheherazade New',serif;font-size:13px;color:var(--text-muted);direction:rtl}
+.prayer-row.active .prayer-name-tr{color:var(--gold-light)}
+.prayer-time-col{text-align:right;margin-right:12px}
+.prayer-time{font-size:18px;font-weight:700;color:var(--text-white);letter-spacing:0.5px}
+.prayer-row.active .prayer-time{color:var(--gold)}
+.prayer-tag{font-size:10px;color:var(--gold);background:rgba(212,175,55,0.12);border-radius:8px;padding:1px 6px;margin-top:2px;display:inline-block}
+.alarm-btn{background:none;border:none;cursor:pointer;padding:6px;color:var(--text-muted);font-size:20px;transition:color .2s;border-radius:50%;}
+.alarm-btn.on{color:var(--gold)}
+.alarm-btn:active{transform:scale(0.9)}
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;background:rgba(10,35,20,0.97);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;
+  padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:100;
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 20px;
+  cursor:pointer;opacity:0.55;transition:opacity .2s;background:none;border:none;
+  color:var(--text-white);font-family:'Nunito',sans-serif;
+}
+.nav-item.active{opacity:1}
+.nav-item.active .nav-icon,.nav-item.active .nav-label{color:var(--gold)}
+.nav-icon{font-size:22px}
+.nav-label{font-size:10px;letter-spacing:0.5px;font-weight:600}
+.overlay{
+  position:fixed;inset:0;background:var(--green-dark);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999;padding:32px;text-align:center;transition:opacity .5s;
+}
+.overlay.hidden{opacity:0;pointer-events:none}
+.overlay-mosque{font-size:72px;margin-bottom:16px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.overlay-title{font-family:'Scheherazade New',serif;font-size:36px;color:var(--gold);margin-bottom:6px}
+.overlay-sub{font-size:13px;color:var(--text-muted);margin-bottom:28px;line-height:1.6;max-width:280px}
+.btn-primary{
+  background:linear-gradient(135deg,#1a6b3c,#0f4a28);border:1px solid rgba(212,175,55,0.4);
+  color:var(--gold);font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;
+  padding:14px 36px;border-radius:30px;cursor:pointer;width:100%;max-width:280px;
+  letter-spacing:0.5px;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,0.3);
+}
+.btn-primary:active{transform:scale(0.97)}
+.spinner{
+  width:36px;height:36px;border:3px solid rgba(212,175,55,0.2);
+  border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.install-banner{
+  background:linear-gradient(90deg,rgba(21,82,51,0.8),rgba(26,107,60,0.5));
+  border:1px solid rgba(212,175,55,0.25);border-radius:14px;padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.install-text{font-size:12px;color:var(--text-muted);flex:1}
+.install-text strong{color:var(--text-white);display:block;margin-bottom:1px}
+.btn-install{
+  background:var(--gold);color:#0a2a1a;font-family:'Nunito',sans-serif;
+  font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;
+  border:none;cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+.toast{
+  position:fixed;bottom:90px;left:16px;right:16px;
+  background:linear-gradient(135deg,#1a6b3c,#0f4a28);
+  border:1px solid rgba(212,175,55,0.5);border-radius:16px;padding:14px 18px;
+  display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  transform:translateY(120px);opacity:0;transition:transform .4s cubic-bezier(0.34,1.56,0.64,1),opacity .4s;z-index:200;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-icon{font-size:28px}
+.toast-text{flex:1}
+.toast-title{font-weight:700;font-size:14px;color:var(--gold)}
+.toast-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+.toast-stop{
+  background:rgba(212,175,55,0.2);color:var(--gold);font-family:'Nunito',sans-serif;
+  font-weight:700;font-size:12px;padding:6px 12px;border-radius:12px;cursor:pointer;border:none;white-space:nowrap;
+}
+.error-box{background:rgba(180,30,30,0.15);border:1px solid rgba(255,80,80,0.2);border-radius:14px;padding:16px;text-align:center;}
+.error-box p{font-size:13px;color:#ff9494;margin-bottom:10px;line-height:1.5}
+.main::-webkit-scrollbar{width:0}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+  <div class="overlay-mosque">🕌</div>
+  <div class="overlay-title">Namaz Vakitleri</div>
+  <p class="overlay-sub">Bulunduğunuz konuma göre doğru namaz vakitlerini göstermek için konum izni gerekiyor.</p>
+  <button class="btn-primary" id="btnGetLocation" onclick="requestLocation()">📍 Konumumu Kullan</button>
+  <p style="margin-top:16px;font-size:11px;color:var(--text-muted)">Konumunuz yalnızca namaz vakitlerini hesaplamak için kullanılır.</p>
+</div>
+<div class="header">
+  <div class="header-logo">
+    <svg class="logo-icon" viewBox="0 0 38 38" fill="none">
+      <circle cx="19" cy="19" r="19" fill="#0f3d26"/>
+      <path d="M17 8 a9 9 0 1 0 0 14 a7 7 0 1 1 0-14z" fill="#d4af37"/>
+      <polygon points="27,7 28.2,11 32,11 29,13.5 30.2,17.5 27,15 23.8,17.5 25,13.5 22,11 25.8,11" fill="#d4af37"/>
+      <rect x="9" y="26" width="20" height="7" rx="1" fill="#d4af37" opacity=".85"/>
+      <ellipse cx="19" cy="26" rx="5" ry="4" fill="#d4af37" opacity=".9"/>
+      <ellipse cx="13" cy="27" rx="3" ry="2.5" fill="#d4af37" opacity=".8"/>
+      <ellipse cx="25" cy="27" rx="3" ry="2.5" fill="#d4af37" opacity=".8"/>
+      <rect x="8" y="19" width="2.5" height="10" rx="1" fill="#d4af37" opacity=".85"/>
+      <rect x="27.5" y="19" width="2.5" height="10" rx="1" fill="#d4af37" opacity=".85"/>
+    </svg>
+    <div>
+      <div class="logo-text">Namaz Vakitleri</div>
+      <div class="logo-sub">Diyanet</div>
+    </div>
+  </div>
+  <div class="header-time">
+    <div class="clock" id="clock">--:--</div>
+    <div class="clock-date" id="clockDate">---</div>
+  </div>
+</div>
+<div class="location-bar" id="locationBar" style="display:none">
+  <div class="location-left">
+    <span>📍</span>
+    <div>
+      <div class="loc-name" id="locName">Yükleniyor...</div>
+      <div class="loc-country" id="locCountry"></div>
+    </div>
+  </div>
+  <button class="loc-refresh" onclick="requestLocation()">↻ Güncelle</button>
+</div>
+<div class="main" id="main" style="display:none">
+  <div class="install-banner" id="installBanner" style="display:none">
+    <div style="font-size:22px">📲</div>
+    <div class="install-text"><strong>Ana Ekrana Ekle</strong>Uygulama olarak kullanmak için yükle</div>
+    <button class="btn-install" id="btnInstall">Yükle</button>
+  </div>
+  <div class="hero" id="hero">
+    <div class="hero-label">Sıradaki Namaz</div>
+    <div class="hero-prayer" id="heroName">--</div>
+    <div class="hero-time" id="heroTime">--:--</div>
+    <div class="hero-countdown"><span>⏳</span><span class="countdown-text" id="heroCountdown">Hesaplanıyor...</span></div>
+    <svg class="mosque-deco" viewBox="0 0 300 80" fill="none">
+      <rect x="30" y="55" width="240" height="25" rx="2" fill="white"/>
+      <ellipse cx="150" cy="55" rx="35" ry="28" fill="white"/>
+      <ellipse cx="105" cy="58" rx="20" ry="18" fill="white"/>
+      <ellipse cx="195" cy="58" rx="20" ry="18" fill="white"/>
+      <rect x="28" y="20" width="10" height="40" rx="3" fill="white"/>
+      <ellipse cx="33" cy="18" rx="7" ry="9" fill="white"/>
+      <rect x="262" y="20" width="10" height="40" rx="3" fill="white"/>
+      <ellipse cx="267" cy="18" rx="7" ry="9" fill="white"/>
+      <rect x="55" y="35" width="7" height="25" rx="2" fill="white"/>
+      <ellipse cx="58.5" cy="33" rx="5" ry="6" fill="white"/>
+      <rect x="238" y="35" width="7" height="25" rx="2" fill="white"/>
+      <ellipse cx="241.5" cy="33" rx="5" ry="6" fill="white"/>
+    </svg>
+  </div>
+  <div class="hijri-card">
+    <div>
+      <div class="hijri-label">Hicri Tarih</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:4px" id="hijriGregorian">--</div>
+    </div>
+    <div class="hijri-arabic" id="hijriDate">---</div>
+  </div>
+  <div class="prayer-section-title">GÜNLÜK VAKİTLER</div>
+  <div class="prayer-list" id="prayerList"></div>
+  <div class="error-box" id="errorBox" style="display:none">
+    <p id="errorMsg">Vakitler yüklenirken bir hata oluştu.</p>
+    <button class="btn-primary" style="font-size:13px;padding:10px 24px" onclick="requestLocation()">Tekrar Dene</button>
+  </div>
+</div>
+<div class="bottom-nav" id="bottomNav" style="display:none">
+  <button class="nav-item active"><span class="nav-icon">🕌</span><span class="nav-label">Vakitler</span></button>
+  <button class="nav-item"><span class="nav-icon">📿</span><span class="nav-label">Kıble</span></button>
+  <button class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Alarmlar</span></button>
+  <button class="nav-item"><span class="nav-icon">⚙️</span><span class="nav-label">Ayarlar</span></button>
+</div>
+<div class="toast" id="alarmToast">
+  <span class="toast-icon">🔔</span>
+  <div class="toast-text">
+    <div class="toast-title" id="toastTitle">Namaz Vakti</div>
+    <div class="toast-sub" id="toastSub">Vakit girdi. Hayırlı namazlar.</div>
+  </div>
+  <button class="toast-stop" onclick="stopAlarm()">Durdur</button>
+</div>
+<script>
+// ── PWA BOOTSTRAP (manifest + SW inline) ──
+(function(){
+  const manifestData = atob("eyJuYW1lIjogIk5hbWF6IFZha2l0bGVyaSIsICJzaG9ydF9uYW1lIjogIk5hbWF6IiwgImRlc2NyaXB0aW9uIjogIkRpeWFuZXQgdGFyelx1MDEzMSBuYW1heiB2YWtpdGxlcmkgdmUgZXphbiBhbGFybSB1eWd1bGFtYXNcdTAxMzEiLCAic3RhcnRfdXJsIjogIi4iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzBhMmExYSIsICJ0aGVtZV9jb2xvciI6ICIjMGEyYTFhIiwgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0IiwgImxhbmciOiAidHIiLCAiaWNvbnMiOiBbeyJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFNQUFBQURBQ0FZQUFBQlMzR3dIQUFBSG5rbEVRVlI0bk8zZFBYTGJTQmVGNGRiVU9MQkRseUtueXJ3QkIxeVcxc0ZsTWZBaXRBT1dVZ1VLUElHTUVRU1JCTHJSUCtmZSt6N1I5MVdOYmFoeERtNFRrS0M3Yno5Ly9FbEFVUCtNUGdCZ0pBcUEwQ2dBUXFNQUNJMENJRFFLZ05Bb0FFS2pBQWp0MzlFSDRObVg3MStyL0Qydnp5OVYvaDU4UmdGMnFoWHkwbitEY3V4REFUTDBDSHV1UzhkRUtiYWpBQ3NVUTc5bWZzeVU0VFlLc0dBeDhMY3N2eDRLOFJFRitNdGI4Sytadms2SzhDWjBBYUtFL2hLMlNXOUNGaUJ5OEMrSlBCVkNGWURnM3hheENDRUtRUER6UkNxQzZ3SVEvSDBpRk1GbEFRaCtYWjZMNEtvQUJMOHRqMFZ3ODkyZ2hMOGZUMnR0ZmdKNE9obVdlSmtHcGljQTRSL1Aramt3T1FHc0w3bzNscWVCdVFsQStIVlpQRGVtQ21CeGdhT3hkbzVNYklHc0xXcDBsclpFOGhPQThOdGw0ZHhKRjhEQ0F1STI5WE1vV3dEMWhjTjJ5dWRTc2dES0M0WXlxdWRVcmdDcUM0WDlGTSt0VkFFVUZ3aDFxWjFqbVFLb0xRemFVVHJYRWdWUVdoRDBvWExPaHhkQVpTSFFuOEs1SC9va1dHRUJXamc5M21mL21jUHgzT0JJOUgzNS9uWG9FK083VWI4bTFWUDRTd0svSmxvaFJwVmdTQUU4aEw5RjZLK0pVb1lSSmVoZUFPdmg3eG44cFFoRjZGMENDckRSeU9BdmVTNkM2d0pZREw5UzhKZThGcUZuQ2JvVndGcjRsWU8vNUxFSXZVclE1VGtBNFcvTDJ2RnUwU3N6Sm40aXJDZTFNSG04dWl0cFhnQXJWMytWNEJQNGR6MGVralV0QU9IZmp1QmYxcm9FNGJkQTNOZVByZG1IWUF0WGY4SnZROHNzTlprQWhQODZnbCttMVZabytMZERSMEw0OVZRdkFGZi95d2ovZmkyeUZXNENFSDdNVlMyQSt0V2Y4TnRYTzJQaEprQlBoRjlmdFFKdzlmK0k4TGRUTTJ0TWdBYVV3Ni93MUZ0SmxRSnc5WCtuSEg1UGFtV09DUkRJZENGZ0NyemJYUUN1L3UrNCt2ZFZJM3RNZ0VyVXc4OVYvN0pkQmVEcWI1ZVh0ZG1id2ZEZkR1MUZTYUJ2L1JuMWlWWUxXNkFLRk1KUzh4Z1V2cDVlaWd2QTlrZFBqZUJhRFArZUxMSUYya2t0TU5QeDVGNEExTDZPWG9vbWdQclZIM21COWhEKzBrenlHY0N4TGNIMkVQNDlYQllnNHY0ZlpWd1dvQmYxcStlV0MwSDBpMFYyQWRqL1ExVkpOcGtBZ1J5T1ovbXAxUnNGQ0dJZWZJcndMcXNBYkgvc21QYjJ0OEplK3N4QVdXNUdtUUNPY1J0MEhRVndLdHFEc0ZKZXZ4WGlhZmEvSDRZZGhST254L3YvMS9Od1BMdGFUM2NUWUg2eS9scitmMlJZcnVlRjlUVnRjd0VzZkFDK2NYSmNuYlJlcnEybmVnbHlzdXB1QWdBNTNCUmd3MVdwK2xYTDArM0RwYlgxVko4Q1c3a3BBRkNDQWlBMENvRFFLTUJPbmo4SFJMQ3BBQlp1Z1c1NFFPUHFBVTVyYSt1cC9rQnNhMmFaQUJVd0JleWlBQWlOQWlBMENsQUoyeUNiS0VCRmxNQWVDb0RRS0VCbFRBRmJLRUFEbE1DT01BWG8vV04vbE1DR01BVVlnUkxvQzFXQUVULzhUUW0waFNwQVNwUUFINFVyUUVxVUFPOUNGbUFVU3FBbmJBRkd2UXpxOUhoUEVZU0VMVUJLWTkrSVJnazBoQzVBU3VOTHdFUVlhMU1CWHA5ZldoL0hVQXJ2eHFRSWRXM05yTmQzZzJicjlLcncxWGZwelA3OWg1UTB5dWtaQlZnNEhNKzFTckQzeFZGUEtYMHE1TldmdzZVb1pjSi9CcmhrWjVpZVVydDNrVjc4dXdsL09TYkFGUVZib3A2dkNueEtTZi9OREJaUWdCVWJpakRzSFpuVCt6a3BRam0yUUJ0ZCtWMWJFaStJOWZLaTJoRTJGOEQ3cmRDdC9wYWc1VDYveU9ueC9va2l2TW5KS2hNZ2szckkxSTlQRFFWQWFCUWdnNVdycTVYalZCRHVMdERwOGY3MzJuOXpPSjUvOVRpV0VhSi8vVXQzMzM3KytKUHpCNVRmRkwxeTVTdCtXblE0bm45WnZLb2VqdWVITFlHLzRlcTlYOVZicjdrM2E4Sk5nQkt6RUZuNmJyWHo2ZkdlUjhRcitBeVF4MHFnckJ6bmNOa0Y0SG1BZkxqVWo2K1prbXd5QWNxb2hrejF1R1JSQUlSR0FSQmFVUUg0SEFBMXBabGtBcFJSdlIycWVseXlpZ3ZBRklDS1BWbmtRVmlaNlc2TDBoV1hPMEFGMkFMdG94STZsZU13WjFjQjJBYWxsTjdDTnlxQUkvOXRDWHN6eUJhb25wN2JvdENocjJuM0ZvZ3A4RW5McTNMNEsvNWNqZXd4QWRxNUZOU2M2VURRTzZoU2dOZm5GK21mRXhCQ3FDdXB0ZlBnTGhCQ3ExWUFQZ3VnbDVwWll3SWd0S29GWUFxZ3Rkb1pZd0lndE9vRllBcWdsUmJaWWdJZ3RDWUZZQXFndGxhWmFqWUJLQUZxYVprbHRrQUlyV2tCbUFMWXEzV0dtazhBU29CU1BiTERGZ2loZFNrQVV3QzVlbVdtMndTZ0JOaXFaMWE2Ym9Fb0FkYjB6Z2lmQVJCYTl3SXdCWEROaUd3TW1RQ1VBRXVqTWpGc0MwUUpNQm1aaGFHZkFTZ0JSbWNnKzdkRXRzQWJKV0lhSGY2VVJPNENLU3dFK2xJNTV4SUZTRWxuUWRDZTBybVdLVUJLV2d1RE50VE9zVlFCVXRKYklOU2plRzdsQ3BDUzVrSmhIOVZ6S2xtQWxIUVhEUG1VejZWc0FWTFNYamhzbzM0T3BRdVFrdjRDNGpvTDU4N0U3d2VZRnBJSFpqWllDUDVFZmdMTVdWcllxS3lkSTFNRlNNbmVBa2RpOGR5WTJBSXRzU1hTWWpINEUzTVRZTTd5d250aC9SeVluQUJ6VElNeHJBZC9Zbm9DekhrNUlSWjRXbXZ6RTJDT2FkQ1dwK0JQWEJWZ1FoSHE4aGo4aWNzQ1RDakNQcDZEUDNGZGdBbEZ5Qk1oK0pNUUJaaFFoTnNpQlg4U3FnQVRpdkJSeE9CUFFoWmdNai94MGNvUU9mUnpvUXN3RjJVcUVQeVBLTURDTWlEV0MwSGdiNk1BS3l4dWt3ajlkaFFndzZWZ2pTNEZZZCtIQXV4MEs0QzF5a0hJMjZFQURSRmNmVzYrR3hRb1FRRVFHZ1ZBYUJRQW9WRUFoRVlCRUJvRlFHZ1VBS0g5QittNHYvOExPdDdUQUFBQUFFbEZUa1N1UW1DQyIsICJzaXplcyI6ICIxOTJ4MTkyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn0sIHsic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBZ0FBQUFJQUNBWUFBQUQwZU5UNkFBQVdnMGxFUVZSNG5PM2RQWElVV2RhQTRld0pNR2lUd0dxM3ZkN0FHQ3lMZGJBc2pGa0VPMURnWW1EMEdOMEtoRlJWeXN5Nm1mZjhQRS9FNTN3ekE0VXE4NTYzVGdyeDIrOS8vZkgzQWdDMDhwL1pMd0FBT0o4QUFJQ0dCQUFBTkNRQUFLQWhBUUFBRFFrQUFHaElBQUJBUXdJQUFCb1NBQURRa0FBQWdJWUVBQUEwSkFBQW9DRUJBQUFOQ1FBQWFFZ0FBRUJEQWdBQUdoSUFBTkNRQUFDQWhnUUFBRFFrQUFDZ0lRRUFBQTBKQUFCb1NBQUFRRU1DQUFBYWVqUDdCUUQzZWZ2KzNaVGY5OGUzNzFOK1gyQU1BUUFCelJycVcyeDVqV0lCNGhFQU1FR0dBVC9TYTM5ZWdRRG5Fd0J3b0c2RGZxOXJYeWRoQU1jUkFEQ0lZVC9lcGErcEtJQXhCQURzWU5qUEl3cGdEQUVBS3hqNHNUMS9md1FCdkU0QXdBVUdmbTZDQUY0bkFHQXg4S3NUQlBDU0FLQXRRNyt2cCsrOUdLQXJBVUFiQmo2WDJBN1FsUUNnTkVPZnJXd0g2RUlBVUk2aHp5aGlnTW9FQUNVWStoeE5ERkNOQUNBMWc1OFpIcTg3SVVCbUFvQjBESDJpc0JVZ013RkFDb1krMFlrQnNoRUFoR2J3azVGSEJHUWdBQWpKNEtjQ0lVQmtBb0F3REgycThuaUFpQVFBMHhuOGRHSXJRQlFDZ0drTWZqb1RBc3dtQURpZHdROC9DUUZtRVFDY3h1Q0g2NFFBWnhNQUhNN2doL1dFQUdjUkFCekc0SWY5aEFCSEV3QU1aL0RET0VLQW93Z0Foakg0NFRoQ2dORUVBSGN6K09FOFFvQlJCQUM3R2Z3d2p4RGdYZ0tBelF4K2lFTUlzTmQvWnI4QWNqSDhJU2IzSmx2WkFMQ0t3d1hpc3cxZ0N3SEFUUVkvNUNNRVdNTWpBSzR5L0NFMzl6QzMyQUR3Z2tNRDZyQU40Qm9iQUg1aCtFTk43bTJlc3dGZ1dSYUhBM1JnRzhCVEFxQTVneC82RVFJc2kwY0FyUm4rMEpzem9EY0IwSlFiSDFnV1owRm5IZ0UwNDJZSG52TklvQ2NiZ0VZTWYrQVdaMFF2TmdBTnVLbUJ0V3dEK3JBQktNN3dCL1p3ZHRRbkFBcHpBd1AzY0liVTVoRkFRVzVhWUJTUEJPcXlBU2pHOEFlTzRHeXBSd0FVNGdZRmp1U01xY1VqZ0FMY2xNQlpQQktvd3dZZ09jTWZtTUhaazU4QVNNd05DTXprRE1wTkFDVGx4Z01pY0JibDVYc0Frbkd6QWRINHZvQ2NiQUFTTWZ5QnlKeFJ1UWlBSk54WVFBYk9xandFUUFKdUtDQVRaMVlPQWlBNE54S1FrYk1yUGdFUW1Cc0l5TXdaRnB1L0JSQ1Ftd2Fvd3Q4UWlNc0dJQmpESDZqSTJSYVBBQWpFRFFKVTVveUxSUUFFNGNZQU9uRFd4U0VBQW5CREFKMDQ4MklRQUpPNUVZQ09uSDN6Q1lDSjNBQkFaODdBdVFUQUpDNThBR2ZoVEFKZ0FoYzh3RS9PeERrRXdNbGM2QUF2T1J2UEp3Qk81QUlIdU00WmVTNEJjQklYTnNEcm5KWG5FUUFuY0VFRHJPZk1QSWNBT0pnTEdXQTdaK2Z4Qk1DQlhNQUEremxEanlVQUR1TENCYmlmcy9RNEF1QUFMbGlBY1p5cHgzZ3ord1ZVNDBKbHRDK2ZQZ3o5OVQ1K2ZoajY2OEVaM3I1L3QvejQ5bjMyeXlqbHQ5Ly8rdVB2MlMraUVnSEFIcU9IL0Y3aWdNZ0V3RmdDWUNERG56V2lEUHUxUkFHUmlJQnhCTUFnaGovWFpCdjRyeEVFekNZQ3hoQUFBeGorUEZWdDRMOUdFRENEQ0xpZkFMaVQ0Yyt5OUJ2NjE0Z0J6aVFDN2lNQTdtRDQ5MmJvM3lZR09JTUkyRThBN0dUNDkyWHdieU1FT0pvSTJFY0E3Q1FBZWpIMHh4QURIRUVBN0NNQWRqRDgrekQ0anlFRUdFMEViQ2NBTmpMOGV6RDR6eUVFR0VrRWJDTUFOakQ4NnpQNDV4QUNqQ0lDMWhNQUt4bit0Um44TVFnQlJoQUI2d2lBbFFSQVRRWi9URUtBZXdpQWRmeHp3Q3NZL2pVWi9uRjViN2lITTNzZEc0Qlh1SkRxTVZ4eXNRMWdMNXVBMjJ3QWJqRDg2ekg4OC9HZXNaY3ovRFliZ0J0Y1BIVVlJalhZQnJDVkxjQjFOZ0JYR1A1MUdQNTFlQy9aeWxsK25RM0FCUzZZR2d5TDJtd0QyTUltNENVYmdHY00veG9NLy9xOHgyemhiSC9KQnVBWkYwbCtCa004SXo2dFgzdGZiUUpZeXhiZ1Z3TGdDY00vTjROL3JwbUQrTXVuRDBLQVZVVEFUd0xnWDRaL2JvYi8rUXhjc2hJQi8zZ3ord1hBdlF6L2N4ajRVSXNBV0h6Nno4endQNWFoVDBWdjM3K3pCVmdFZ09HZm1PRi9ERU9mRGtSQTh3QXcvUE15L01jeitPbW1ld1MwRGdEeU1makhNL2locDdZQjROTi9Qb2IvV0FZLzlONEN0QTBBY2pIOHh6SDRnV1ZwR2dBKy9lZGkrSTloOE1ObFhiY0E3UUxBOEtjYmd4OWUxekVDL0dOQWhPYlQvMzBNZitDYVZoc0FuLzV6TWZ6M00vaGh1MjViZ0RZYkFNTS9GOE4vUDhNZjl1czBLMXB0QU1qQjhOL0g0QWUyYUxFQjZGUjAyUm4rK3hqK01FNlhtZEVpQU1qQjhOL0g4QWYyS1A4SW9FdkowWS9CRDhmcDhBMkJwVGNBaG44ZVB2MXZZL2pEOGFyUGtOSUJRQTZHL3phR1B6QkMyUUNvWG01VkdQN2JHUDV3cnNxenBHd0FRRFdHUHpCU3lRQ29YR3lWK1BTL251RVA4MVNkS1NVRGdQZ00vL1VNZitBSTVRS2dhcW5SaytFUE1WU2NMZVVDZ1BoOCtsL0g4QWVPVkNvQUtoWmFOWWIvT29ZL3hGTnR4cFFLQUtqQThBZk9VQ1lBcXBWWlJUNzl2ODd3aDlncXpab3lBVUJzaGo5QUxDVUNvRktSMFpkUC81QkRsWmxUSWdDSXphZi8xeG4rc2JtR3FTaDlBRlFwTWZveS9DR2ZDck1uZlFBUW0wOU9aUGQ0RGJ1V3FTWjFBRlFvTUhyejZSL3l5ajZEVWdjQXNmbkVkSnZoRDh5VU5nQ3lseGNRMy9PSUZiVThsM2tXcFEwQVluTlEzdWJUUHpCYnlnRElYRnhnK0VNdFdXZFN5Z0FnTnAvK3FlRGFkZXo2cG9wMEFaQzF0R0JaZlBxSHFqTE9wblFCQUFEY1R3QXdsUFhvZFQ3OTUvSGFkZXc2cDRKVUFaQnh4UUpBRDlsbVZLb0FJRGFmaXE3ejZSK0lKazBBWkNzcklLZTFJU3Q0dVNUVHJFb1RBSkNWVC85QVJDa0NJRk5SZGVYVEVNQS9zc3lzRkFFQVdmbjBuOHZXa0JXK1pDWUFBS0NoMzM3LzY0Ky9aNytJVzdLc1VqcnpLZWd5bi83UFVlMzZjOTNVOGVQYjk5a3Y0U1liQUNDMVNnT3owcCtGK043TWZnRUE5M29jbkZtM0FRWS9NNFRlQUZqL2s1VURmWTZNWC9lTXI1bDFvcyt3MEFGQWZGay9jVkZYbG9INjhmTkRtdGRLVFdFRElIbzVBWEZGSDY2Ulh4dGpSWjVsWVFNQXNuSzR4eEh0dllnZUp2UWlBSURTb2d6ZENLOEJuZ29aQUpGWEp2emsrVCtaekJyQVVRS0VlYUxPdEpBQkFIQ0Vzd2V4d1U5a2ZnNEFET1RBaisrTW54bmdPaUNEY0J1QXFLc1NvSmFqaHJUaHp5VVJaMXU0QUFBQWppY0EyTVUzQUpMZFVkZXdlNE1zUWdWQXhCVUpyR1gxQzl3U2JjYUZDZ0FBNEJ3Q0FHam42RFc5eHdCa0lBQUFvS0V3QVJEdDJRZ0FqQlpwMW9VSkFJQXpuTFdlOXhpQTZQd2tRRFp6c05ISjA3L2Q0ZHFua2hBYmdFZ3JFZGpEWHdHczZmbjc2bjFtaENnekwwUUFBSnhoN1NmNFcvK0MzNVovM2MvR2dNZ0VBTUFUYTRlN2JRRForUjRBZ0dYZlFEL2pYeGFFbzB6ZkFFUjVGZ0xVZG0xSWIxbnBYM1ByMXhBSFhCSmg5azBQQUlCWlJxL3hQUllnRTQ4QWdIYU9ITlFlQzVDRkRRQlEzdE5oZk5hbmREOC9nT2ltYmdBaVBBTUJlcGl4bnJjTjRKYTM3OTh0UDc1OW4vYjcyd0FBNWMxK05qLzc5NGRMQkFBQU5DUUFBS0NoYVFIZytUOEEzYzJjaFRZQUFOQ1Fud1BBSGwrdi9QLy9QUFZWUUVOZlBuMjRlUDk5L1B6Zy9tTVRHd0EydVhiNC9Pdldmd2JjNmRiOTk4cTlDUy9ZQUxES2hzUGw4Yi9uMHdnTXN2YitlL3p2MlFhd3hwUU5nRzhBekdYbko0dFduMGI4b0JlT3N1ZitzdzNJWmRaTTlBZ0FBQm9TQU54MDV5Y0puMExnRHZmY2Y3WUF2RVlBY05XZ0E4UWhCRHVNdVA5RUFMY0lBQUJvNlBRQThBMkFPUXorNU9CVENHd3c4djZ6QmNoaHhteTBBUUNBaGdRQURPS3ZBZ0taQ0FBQWFFZ0E4TUpCend3OWg0UVZqcmovZkI4QWx3Z0FBR2pvMUFEd053Q296dmNCQUh1ZFBTTnRBQUNnSVFFQUFBMEpBQUJvU0FEQVlMNFBBTWhBQUFCQVF3SUFBQm9TQUx6dzhmUERud2Y4c2tmOG1tRjVETUJlUjl4L0I5M1RKSGRhQVBnWkFBQncyNW16MGdZQUFCb1NBSEFRandHQXlBUUFGdzErWnVqNUkyd3c4djd6L0o5ckJBQWN5QllBaUVvQWNKVlBEakNQKzQrakNRQTRtQzBBRUpFQUFJQ0dCQUNjd0JZQWlFWUFBRUJEQWdCT1lnc0FSSEpLQVBneHdBQ3d6bGt6MHdZQVRtUUxBRVFoQUFDZ0lRRUFKN01GQUNJUUFEQ0JDQUJtRXdBQTBKQUFnRWxzQVlDWkJBQk1KQUtBV1FRQUFEUWtBR0F5V3dCZ0JnRUFBWWdBNEd3Q2dNTjkvUHd3K3lXa0lBS0FNd2tBQUdoSUFIQUtXNEIxYkFHQXN3Z0FUaU1DMWhFQndCa0VBQVFrQW9DakNRQk9aUXV3bmdnQWppUUFPSjBJV0U4RUFFY1JBQkNjQ0FDT0lBQ1l3aFpnR3hFQWpDWUFtRVlFYkNNQ2dKRUVBQ1FpQW9CUkJBQlQyUUpzSndLQUVRUUEwNG1BN1VRQWNDOEJRQWdpWUxzdm56NElBV0EzQVFESmlRQmdEd0ZBR0xZQSs0a0FZQ3NCUUNnaVlEK1BCSUF0QkFEaGlJRDdpQUJnRFFGQVNDTGdQcllCd0d0T0NZQWYzNzZmOGR0UWpBaTRud2lBZk02YW1UWUFoQ1lDN21jYkFGd2lBS0FKSVFBOEpRQUl6eFpnTENFQUxJc0FJQWtSTUo0UWdONEVBR21JZ0dNSUFlaEpBSkRLeDg4UFF1QWdRZ0I2RVFDa0pBS084eGdDWWdCcUV3Q2tKUUtPSndhZ3JqZXpYd0RjNCtQbkI4UHBKTSsvemdJTWNoTUFwQ2NDNW9nVUJJK3ZSWlRBZXFjRndJOXYzNWUzNzkrZDlkdlJqQWlZNzliWGY4UmdmdTM5TmZ5cDRNd2ZuVzhEUUJtUEEwQUlMTXV5TEY4SC8zcC8zdk0vUHZJOU1maGhId0ZBT1kyMkFhT0gvTjdmNjY0NHVJZmhEL3NKQUVvcUdBRm5EdnV0THIyMnc2UEE4SWY3Q0FES0t2QklJUExRZjgzVDF6NDBCZ3grR01QUEFhQzhSQVBqNjdQL3EyTFlueXZSZXduaDJRRFFRdkJ0UUtWaHY4YmpuM2YxWnNEZ2gvRnNBR2dsMENDcCtFbC9xMVZmZzBEdkdaUnk2Z2JBendJZ2dzbmJnTTRELzVZWFd3R0RuMjdPL0JrQXkySURRR01uRDVqdW4vYlgrcm9zeTFmREg0N25ld0JvN1lSdGdLRy93NWRQSDc0dXk3SjgvUHd3N1djTVFIVUNBSlpEUXNEZ0gwQUl3SEU4QW9BblBuNStHUEZvd1BBZjdERUVnSEZzQU9DQ25Sc0JRK3BBdGdFdzF1a2JnTE8veXhIdXNXRWpZUGlmeERhQWltYk1SbzhBWUlYSEVMZ1NBd2JTeVVRQTNNOGpBTmpveWVNQlEyZ2lqd1RnUGpZQXNJUGhINGYzQXZZUkFMQ1JnUk9QOXdTMm14SUF2aEdRckF5YXVMdzNaRFZySnRvQXdFb0dUSHplSTFoUEFBQkFRd0lBVnZESk1nL3ZGYXdqQU9BVkJrbyszak40M2JRQThJMkFBSFEzY3hiYUFNQU5Qa25tNWIyRDJ3UUFYR0dBNU9jOWhPc0VBQUEwTkRVQWZCOEFBRjNObm9IK01TREMrUExwdy8vdStkOS8vUHp3MzRHdnhlcTRpQytmUG53ZCtROEczWHVkTHN2WWF4WDJFZ0NjYnNRQnV1WFhkZGl5eDFIWDZhMWYyN1hLbVFRQWh6dnlJTjN6K3p0a3VXVDJkWHJsTlh5WThrSm9ZWG9BL1BqMmZYbjcvdDNzbDBFalR3L1pTekZnL1YvUHJjY0FFUVkvL2N4Ky9yOHNBUUlBWm5vOC9HMEZlakgwUVFEQXNpeENvQXVESDM0U0FQREVrd0hoMldzdEQxOCtmWGlZL1NJZ2toQS9DQ2pDc3hCNHhyQ293M3RKS0ZGbW5nMEFYUGM0T0d3RGNqTDQ0WVlRR3dBSXppREp4M3NHcndnVEFGRldJbkNGZ1pLSDk0cXdJczI2TUFFQUNSZ3NRQmtDQUtoRXBNRktBZ0MyTVdEaTh0N0FCcUVDSU5LekVRQVlLZHFNQ3hVQWtJUlBtdkY0VDJBakFRQUFEWVVMZ0dnckVnQzRWOFRaRmk0QUFJRGpDUUFBYUNoa0FFUmNsUURBSGxGbldzZ0FnT0Q4NDBEeGVFOWdJd0VBQUEyRkRZQ29LeFBhODBrekx1OE40VVNlWldFREFHQ3JqNThmL2p2N05VQVdvUU1nY2puUmxwODRGOWZEbDA4Zi9qZjdSY0NqNkRNc2RBQkFVQ0lnSHU4SmJDUUFZQjhESnc3dkJld1FQZ0NpcjFCbzdXRXhmR2J5OVNlc0RMTXJmQUJBQW9iUStYek40VTRDQU1Zd2tNN2phdzBEcEFpQURLc1VXS3lraiticlN3cFpabGFLQUlCa0RLbnhmRTFoc0RRQmtLV280Rjgrclk3aDYwZ3FtV2JWbTlrdkFJcDdIRjUrVE8wMmhqNGNMTTBHWUZseWxSVTg0NVBzT3I1T3BKVnRSdGtBd0xsc0JDNHo5T0ZrQWdEbWVEcnd1c2FBb1E4VHBYb0VzQ3o1Vml5d1FyZTFkN2MvTHcxa25FMDJBQkRIODZGWVpUTmcyRU5BS1FQZ3g3ZnZ5OXYzNzJhL0REaGE1c2NFaGo1dFpQejB2eXhKQXdBYXVqUlFvMFNCWVE4SnBRMEFXd0M0T1hoSHg0RWhEeGRrL2ZTL0xJa0RBTGpKd0FadVN2ZTNBSjdLWEY0QTVKWjlCcVVPQUFCZ24vUUJrTDNBQU1pbnd1eEpId0FBd0hZbEFxQkNpUUdRUTVXWlV5SUFBSUJ0eWdSQWxTSURJSzVLczZaTUFBQUE2NVVLZ0VwbEJrQXMxV1pNcVFBQUFOWXBGd0RWQ2cyQStTck9sbklCQUFDOHJtUUFWQ3cxQU9hb09sTktCZ0FBY0Z2WkFLaGFiQUNjcC9Jc0tSc0FBTUIxcFFPZ2Nya0JjS3pxTTZSMEFDeEwvVGNRZ1BFNnpJN3lBUUFBdk5RaUFEcVVIQUJqZEprWkxRSUFBUGhWbXdEb1VuUUE3TmRwVnJRSmdHWHA5Y1lDc0UyM0dkRXFBQUNBZjdRTGdHNkZCOERyT3M2R2RnR3dMRDNmYUFBdTZ6b1RXZ1lBQUhUWE5nQzZGaDhBUDNXZUJXMERBQUE2YXgwQW5jc1BvTHZ1TTZCMUFDeUxDd0NnSTJlL0FGaVd4WVVBMElrei94OENBQUFhRWdEL1VvUUE5VG5yZnhJQVQ3Z3dBT3B5eHY5S0FBQkFRd0xnR1lVSVVJK3ovU1VCY0lFTEJhQU9aL3BsQXVBS0Z3eEFmczd5NndRQUFEUWtBRzVRamdCNU9jTnZFd0N2Y0FFQjVPUHNmcDBBV01HRkJKQ0hNM3NkQVFBQURRbUFsUlFsUUh6TzZ2VUV3QVl1TElDNG5OSGJDSUNOWEdBQThUaWJ0eE1BTzdqUUFPSndKdThqQUFDZ0lRR3drK0lFbU05WnZKOEF1SU1MRDJBZVovQjlCTUNkWElBQTUzUDIzazhBRE9CQ0JEaVBNM2NNQVRDSUN4TGdlTTdhY1FUQVFDNU1nT000WThjU0FBRFEwRysvLy9YSDM3TmZSRFZ2MzcrYi9SSUFTdkhwZnp3YmdBTzRVQUhHY2FZZVF3QWN4QVVMY0Q5bjZYRUV3SUZjdUFEN09VT1BKUUFPNWdJRzJNN1plVHdCY0FJWE1zQjZ6c3h6Q0lDVHVLQUJYdWVzUEk4QU9KRUxHK0E2WitTNUJNREpYT0FBTHprYnp5Y0FKbkNoQS96a1RKeERBRXppZ2dkd0ZzNGtBQ1p5NFFPZE9RUG5FZ0NUdVFHQWpweDk4d21BQU53SVFDZk92QmdFUUJCdUNLQURaMTBjQWlBUU53WlFtVE11RmdFUWpCc0VxTWpaRnMrYjJTK0FseDV2bExmdjMwMStKUUQzTWZqanNnRUl6STBEWk9ZTWkwMEFCT2NHQWpKeWRzVW5BQkp3SXdHWk9MTnlFQUJKdUtHQURKeFZlUWlBUk54WVFHVE9xRno4TFlCay9BMEJJQnFEUHljYmdLVGNjRUFFenFLOEJFQmlianhnSm1kUWJnSWdPVGNnTUlPekp6L2ZBMUNBN3dzQXptTHcxMkVEVUlnYkV6aVNNNllXQVZDTUd4UTRnck9sSG84QUN2SklBQmpGNEsvTEJxQXdOeTV3RDJkSWJRS2dPRGN3c0llem96NlBBQnJ3U0FCWXkrRHZ3d2FnRVRjMmNJc3pvaGNiZ0dac0E0RG5EUDZlYkFDYWNzTUR5K0lzNkV3QU5PYkdoOTZjQWIxNUJOQ2NSd0xRajhIUHNnZ0EvaVVFb0Q2RG42YzhBdUFYRGdpb3liM05jellBdkdBYkFIVVkvRnhqQThCVkRnN0l6VDNNTFRZQTNHUWJBUGtZL0t3aEFGaEZDRUI4Qmo5YmVBVEFKZzRZaU1tOXlWWTJBR3htR3dCeEdQenNKUURZVFFqQVBBWS85eElBM0UwSXdIa01ma1lSQUF3akJPQTRCaitqQ1FDR0V3SXdqc0hQVVFRQWh4RUNzSi9CejlFRUFJY1RBckNld2M5WkJBQ25FUUp3bmNIUDJRUUFweE1DOEpQQnp5d0NnR21FQUowWi9Nd21BSmhPQ05DSndVOFVBb0F3bmg2TVlvQktESDBpRWdDRVpDdEFCUVkva1FrQVFoTUNaR1R3azRFQUlBV1BCNGpPMENjYkFVQTZZb0FvREgweUV3Q2s1aEVCTXhqOFZDQUFLTUZXZ0tNWitsUWpBQ2hIRERDS29VOWxBb0RTeEFCYkdmcDBJUUJvNC9uQkxnaFlGZ09mdmdRQWJka085R1hvZ3dDQVpWbHNCNm96OE9FbEFRQVhDSUxjREh4NG5RQ0FGUVJCYkFZK2JDY0FZSWRMQTBjVW5NT3doekVFQUF3aUNzWXo3T0U0QWdBT2RHMkFDWU5mR2ZSd1BnRUFFN3cyOEtvRmdnRVA4UWdBQ0dqTHdKd1ZDNFk2NUNZQUlEbURHTmpqUDdOZkFBQndQZ0VBQUEwSkFBQm9TQUFBUUVNQ0FBQWFFZ0FBMEpBQUFJQ0dCQUFBTkNRQUFLQWhBUUFBRFFrQUFHaElBQUJBUXdJQUFCb1NBQURRa0FBQWdJWUVBQUEwSkFBQW9DRUJBQUFOQ1FBQWFFZ0FBRUJEQWdBQUdoSUFBTkNRQUFDQWhnUUFBRFQwZjlvdVZjNWpjL25VQUFBQUFFbEZUa1N1UW1DQyIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn1dfQ==");
+  const blob = new Blob([manifestData],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  document.getElementById('manifestLink').href = url;
+
+  if('serviceWorker' in navigator){
+    const swCode = atob("Y29uc3QgQ0FDSEVfTkFNRT0nbmFtYXotdjInOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2luc3RhbGwnLGU9PntzZWxmLnNraXBXYWl0aW5nKCk7fSk7CnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignYWN0aXZhdGUnLGU9PntzZWxmLmNsaWVudHMuY2xhaW0oKTt9KTsKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsZT0+e2UucmVzcG9uZFdpdGgoZmV0Y2goZS5yZXF1ZXN0KS5jYXRjaCgoKT0+Y2FjaGVzLm1hdGNoKGUucmVxdWVzdCkpKTt9KTs=");
+    const swBlob = new Blob([swCode],{type:'application/javascript'});
+    const swUrl = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl).catch(():{});
+  }
+})();
+
+// ── PRAYER DATA ──
+const PRAYERS=[
+  {key:'Fajr',tr:'İmsak',ar:'الفجر',icon:'🌙'},
+  {key:'Sunrise',tr:'Güneş',ar:'الشروق',icon:'🌅'},
+  {key:'Dhuhr',tr:'Öğle',ar:'الظهر',icon:'☀️'},
+  {key:'Asr',tr:'İkindi',ar:'العصر',icon:'🌤️'},
+  {key:'Maghrib',tr:'Akşam',ar:'المغرب',icon:'🌇'},
+  {key:'Isha',tr:'Yatsı',ar:'العشاء',icon:'🌃'},
+];
+const alarmState=JSON.parse(localStorage.getItem('alarmState')||'{"Fajr":true,"Dhuhr":true,"Asr":true,"Maghrib":true,"Isha":true}');
+let timings=null,audioCtx=null,alarmInterval=null,countdownInterval=null,deferredInstall=null,lastTriggered={};
+
+// ── CLOCK ──
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const days=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+  const months=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  document.getElementById('clockDate').textContent=`${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
+setInterval(updateClock,1000); updateClock();
+
+// ── LOCATION ──
+function requestLocation(){
+  const btn=document.getElementById('btnGetLocation');
+  if(btn){btn.disabled=true;btn.innerHTML='<span style="opacity:.6">📡 Konum alınıyor...</span>';}
+  if(!navigator.geolocation){showError('Cihazınız konum desteklemiyor.');return;}
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      const lat=pos.coords.latitude,lon=pos.coords.longitude;
+      document.getElementById('overlay').classList.add('hidden');
+      document.getElementById('locationBar').style.display='flex';
+      document.getElementById('main').style.display='flex';
+      document.getElementById('bottomNav').style.display='flex';
+      reverseGeocode(lat,lon);
+      fetchPrayerTimes(lat,lon);
+    },
+    err=>{
+      if(btn){btn.disabled=false;btn.innerHTML='📍 Konumumu Kullan';}
+      let msg='Konum alınamadı.';
+      if(err.code===1)msg='Konum izni reddedildi. Tarayıcı ayarlarından izin verin.';
+      showError(msg);
+    },
+    {enableHighAccuracy:true,timeout:10000,maximumAge:0}
+  );
+}
+
+async function reverseGeocode(lat,lon){
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=tr`);
+    const d=await r.json();
+    const city=d.address.city||d.address.town||d.address.village||d.address.county||'';
+    document.getElementById('locName').textContent=city||'Konumunuz';
+    document.getElementById('locCountry').textContent=d.address.country||'';
+  }catch(e){document.getElementById('locName').textContent='Konumunuz';}
+}
+
+// ── PRAYER TIMES ──
+async function fetchPrayerTimes(lat,lon){
+  document.getElementById('hero').innerHTML='<div style="padding:30px 0"><div class="spinner"></div><div style="color:var(--text-muted);font-size:13px">Vakitler yükleniyor...</div></div>';
+  try{
+    const now=new Date();
+    const dd=String(now.getDate()).padStart(2,'0'),mm=String(now.getMonth()+1).padStart(2,'0'),yyyy=now.getFullYear();
+    const r=await fetch(`https://api.aladhan.com/v1/timings/${dd}-${mm}-${yyyy}?latitude=${lat}&longitude=${lon}&method=13`);
+    const d=await r.json();
+    if(d.code!==200) throw new Error('API error');
+    timings=d.data.timings;
+    renderHijri(d.data.date);
+    rebuildHero();
+    renderPrayers();
+    startCountdown();
+    startAlarmChecker();
+    document.getElementById('errorBox').style.display='none';
+  }catch(e){showError('Namaz vakitleri alınamadı. İnternet bağlantınızı kontrol edin.');}
+}
+
+function rebuildHero(){
+  document.getElementById('hero').innerHTML=`
+    <div class="hero-label">Sıradaki Namaz</div>
+    <div class="hero-prayer" id="heroName">--</div>
+    <div class="hero-time" id="heroTime">--:--</div>
+    <div class="hero-countdown"><span>⏳</span><span class="countdown-text" id="heroCountdown">Hesaplanıyor...</span></div>
+    <svg class="mosque-deco" viewBox="0 0 300 80" fill="none">
+      <rect x="30" y="55" width="240" height="25" rx="2" fill="white"/>
+      <ellipse cx="150" cy="55" rx="35" ry="28" fill="white"/>
+      <ellipse cx="105" cy="58" rx="20" ry="18" fill="white"/>
+      <ellipse cx="195" cy="58" rx="20" ry="18" fill="white"/>
+      <rect x="28" y="20" width="10" height="40" rx="3" fill="white"/>
+      <ellipse cx="33" cy="18" rx="7" ry="9" fill="white"/>
+      <rect x="262" y="20" width="10" height="40" rx="3" fill="white"/>
+      <ellipse cx="267" cy="18" rx="7" ry="9" fill="white"/>
+      <rect x="55" y="35" width="7" height="25" rx="2" fill="white"/>
+      <ellipse cx="58.5" cy="33" rx="5" ry="6" fill="white"/>
+      <rect x="238" y="35" width="7" height="25" rx="2" fill="white"/>
+      <ellipse cx="241.5" cy="33" rx="5" ry="6" fill="white"/>
+    </svg>`;
+}
+
+function renderHijri(dateData){
+  const h=dateData.hijri;
+  const ar=['المحرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الثانية','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+  const tr=['Muharrem','Safer','Rebîülevvel','Rebîülahir','Cemâziyelevvel','Cemâziyelahir','Recep','Şaban','Ramazan','Şevval','Zilkade','Zilhicce'];
+  const i=parseInt(h.month.number)-1;
+  document.getElementById('hijriDate').textContent=`${h.day} ${ar[i]} ${h.year}`;
+  document.getElementById('hijriGregorian').textContent=`${h.day} ${tr[i]} ${h.year}`;
+}
+
+function renderPrayers(){
+  const list=document.getElementById('prayerList'); list.innerHTML='';
+  const now=new Date(),nowMin=now.getHours()*60+now.getMinutes();
+  let nextIdx=-1;
+  for(let i=0;i<PRAYERS.length;i++){
+    const t=timings[PRAYERS[i].key]; if(!t) continue;
+    const [h,m]=t.split(':').map(Number);
+    if(h*60+m>nowMin){nextIdx=i;break;}
+  }
+  if(nextIdx===-1) nextIdx=0;
+  PRAYERS.forEach((p,i)=>{
+    const t=timings[p.key]; if(!t) return;
+    const [h,m]=t.split(':').map(Number);
+    const isActive=i===nextIdx,isPast=(h*60+m)<nowMin;
+    const row=document.createElement('div');
+    row.className='prayer-row'+(isActive?' active':'');
+    row.innerHTML=`
+      <div class="prayer-icon-wrap">${p.icon}</div>
+      <div class="prayer-info">
+        <div class="prayer-name-tr">${p.tr}</div>
+        <div class="prayer-name-ar">${p.ar}</div>
+      </div>
+      <div class="prayer-time-col">
+        <div class="prayer-time" style="${isPast&&!isActive?'opacity:.45':''}">${t}</div>
+        ${isActive?'<div class="prayer-tag">Sıradaki</div>':''}
+      </div>
+      <button class="alarm-btn ${alarmState[p.key]?'on':''}" onclick="toggleAlarm('${p.key}',this)">${alarmState[p.key]?'🔔':'🔕'}</button>`;
+    list.appendChild(row);
+  });
+}
+
+function toggleAlarm(key,btn){
+  alarmState[key]=!alarmState[key];
+  btn.classList.toggle('on',alarmState[key]);
+  btn.textContent=alarmState[key]?'🔔':'🔕';
+  localStorage.setItem('alarmState',JSON.stringify(alarmState));
+  miniToast(alarmState[key]?`${PRAYERS.find(p=>p.key===key).tr} alarmı açıldı`:`${PRAYERS.find(p=>p.key===key).tr} alarmı kapatıldı`);
+}
+
+// ── COUNTDOWN ──
+function startCountdown(){
+  if(countdownInterval) clearInterval(countdownInterval);
+  countdownInterval=setInterval(()=>{
+    if(!timings) return;
+    const now=new Date(),nowSec=now.getHours()*3600+now.getMinutes()*60+now.getSeconds();
+    let nextIdx=-1;
+    for(let i=0;i<PRAYERS.length;i++){
+      const t=timings[PRAYERS[i].key]; if(!t) continue;
+      const [h,m]=t.split(':').map(Number);
+      if(h*60+m>now.getHours()*60+now.getMinutes()){nextIdx=i;break;}
+    }
+    if(nextIdx===-1) nextIdx=0;
+    const p=PRAYERS[nextIdx],t=timings[p.key],[h,m]=t.split(':').map(Number);
+    let diff=h*3600+m*60-nowSec; if(diff<0) diff+=86400;
+    const hrs=Math.floor(diff/3600),mins=Math.floor((diff%3600)/60),secs=diff%60;
+    let txt=hrs>0?`${hrs} saat ${mins} dakika`:mins>0?`${mins} dakika ${secs} saniye`:`${secs} saniye`;
+    const hEl=document.getElementById('heroCountdown'),nEl=document.getElementById('heroName'),tEl=document.getElementById('heroTime');
+    if(hEl) hEl.textContent=txt+' kaldı';
+    if(nEl) nEl.textContent=p.tr;
+    if(tEl) tEl.textContent=t;
+  },1000);
+}
+
+// ── ALARM ──
+function startAlarmChecker(){
+  if(alarmInterval) clearInterval(alarmInterval);
+  alarmInterval=setInterval(()=>{
+    if(!timings) return;
+    const now=new Date();
+    const ts=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    PRAYERS.forEach(p=>{
+      const t=timings[p.key]; if(!t) return;
+      if(t.substring(0,5)===ts&&alarmState[p.key]&&lastTriggered[p.key]!==ts){
+        lastTriggered[p.key]=ts; triggerAlarm(p);
+      }
+    });
+  },1000);
+}
+
+function triggerAlarm(prayer){
+  playEzan();
+  document.getElementById('toastTitle').textContent=`${prayer.icon} ${prayer.tr} Vakti`;
+  document.getElementById('toastSub').textContent='Vakit girdi. Hayırlı namazlar.';
+  document.getElementById('alarmToast').classList.add('show');
+  if(navigator.vibrate) navigator.vibrate([500,200,500,200,500]);
+  setTimeout(()=>document.getElementById('alarmToast').classList.remove('show'),15000);
+}
+
+function playEzan(){
+  try{
+    if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const ctx=audioCtx;
+    const notes=[
+      {f:260,d:.4,s:0},{f:290,d:.3,s:.5},{f:330,d:.6,s:.9},{f:350,d:.8,s:1.6},{f:330,d:.4,s:2.5},{f:290,d:.6,s:3.0},
+      {f:260,d:.4,s:4.0},{f:290,d:.3,s:4.5},{f:350,d:.5,s:4.9},{f:390,d:.9,s:5.5},{f:370,d:.4,s:6.5},{f:330,d:.7,s:7.0},
+      {f:260,d:.3,s:8.5},{f:310,d:.4,s:9.0},{f:350,d:.5,s:9.5},{f:390,d:.6,s:10.1},{f:420,d:1.0,s:10.8},{f:390,d:.4,s:12.0},{f:350,d:.4,s:12.5},{f:310,d:.8,s:13.0},
+    ];
+    const t0=ctx.currentTime+.1;
+    notes.forEach(n=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);o.type='sine';
+      o.frequency.setValueAtTime(n.f,t0+n.s);
+      o.frequency.linearRampToValueAtTime(n.f+4,t0+n.s+n.d*.5);
+      o.frequency.linearRampToValueAtTime(n.f,t0+n.s+n.d);
+      g.gain.setValueAtTime(0,t0+n.s);g.gain.linearRampToValueAtTime(.35,t0+n.s+.05);
+      g.gain.linearRampToValueAtTime(.3,t0+n.s+n.d-.05);g.gain.linearRampToValueAtTime(0,t0+n.s+n.d);
+      o.start(t0+n.s);o.stop(t0+n.s+n.d+.05);
+    });
+  }catch(e){}
+}
+
+function stopAlarm(){
+  if(audioCtx){audioCtx.close();audioCtx=null;}
+  if(navigator.vibrate) navigator.vibrate(0);
+  document.getElementById('alarmToast').classList.remove('show');
+}
+
+function showError(msg){
+  document.getElementById('errorBox').style.display='block';
+  document.getElementById('errorMsg').textContent=msg;
+}
+
+function miniToast(msg){
+  document.getElementById('toastTitle').textContent=msg;
+  document.getElementById('toastSub').textContent='';
+  const t=document.getElementById('alarmToast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ── INSTALL ──
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredInstall=e;
+  document.getElementById('installBanner').style.display='flex';
+  document.getElementById('btnInstall').onclick=async()=>{
+    deferredInstall.prompt();
+    await deferredInstall.userChoice;
+    document.getElementById('installBanner').style.display='none';
+    deferredInstall=null;
+  };
+});
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+const isStandalone=window.matchMedia('(display-mode:standalone)').matches;
+if(isIOS&&!isStandalone){
+  setTimeout(()=>{
+    const b=document.getElementById('installBanner'); b.style.display='flex';
+    b.querySelector('.install-text strong').textContent='Ana Ekrana Ekle (iOS)';
+    b.querySelector('#btnInstall').style.display='none';
+  },2000);
+}
+
+// ── AUTO-LOCATION ──
+if(localStorage.getItem('hasVisited')){setTimeout(requestLocation,400);}
+else{localStorage.setItem('hasVisited','1');}
+</script>
+</body>
+</html>
