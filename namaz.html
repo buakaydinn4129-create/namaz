@@ -400,7 +400,8 @@ function asrAngle(lat,decl,shadow=1){
 function calcTimes(date,lat,lng){
   const jd=julianDay(date);
   const{decl,eqt}=sunPos(jd);
-  const noon=12-eqt/60-lng/15;
+  const utcOffset=-date.getTimezoneOffset()/60;
+  const noon=12-eqt/60-lng/15+utcOffset;
   const fH=hourAngle(18,lat,decl)??0;
   const sH=hourAngle(.8333,lat,decl)??0;
   const iH=hourAngle(17,lat,decl)??0;
