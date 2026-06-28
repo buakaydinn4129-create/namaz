@@ -402,19 +402,20 @@ function calcTimes(date,lat,lng){
   const noon = 12 - EqT - lng/15 + tz;
   
   function HA(angle){
-    const c = (Math.sin(toRad(angle)) - Math.sin(toRad(lat))*Math.sin(toRad(decl)))
+    // angle: negatif = ufkun altı (sabah/akşam), pozitif = ufkun üstü (ikindi)
+    const sinA = Math.sin(toRad(angle));
+    const c = (sinA - Math.sin(toRad(lat))*Math.sin(toRad(decl)))
               / (Math.cos(toRad(lat))*Math.cos(toRad(decl)));
     if(c<-1||c>1) return 0;
     return toDeg(Math.acos(c))/15;
   }
-  
-  // Sabah açısı: Diyanet -18° (astro twilight)
+
+  // Sabah: -18°
   const fajrHA  = HA(-18);
   // Güneş doğuş/batış: -0.8333°
   const srHA    = HA(-0.8333);
-  // İkindi: Şafii (gölge = 1x boy) - Diyanet bu metodu kullanır
-  const asrShadow = 1;
-  const asrElevation = toDeg(Math.atan(1/(asrShadow + Math.tan(toRad(Math.abs(lat - decl))))));
+  // İkindi: Şafii (gölge = 1x boy) - yükseklik açısı POZİTİF
+  const asrElevation = toDeg(Math.atan(1/(1 + Math.tan(toRad(Math.abs(lat - decl))))));
   const asrHA = HA(asrElevation);
   // Yatsı: -17°
   const ishaHA  = HA(-17);
