@@ -368,59 +368,91 @@ const swBlob = new Blob([swCode],{type:'text/javascript'});
 const swUrl  = URL.createObjectURL(swBlob);
 if('serviceWorker' in navigator) navigator.serviceWorker.register(swUrl).catch(()=>{});
 
-// ── Math helpers ──────────────────────────────────────────────────────────
+// ── Math helpers (sadece Kıble için) ──────────────────────────────────────
 const toRad = d=>d*Math.PI/180, toDeg = r=>r*180/Math.PI;
+function toMin(s){const[h,m]=s.split(':').map(Number);return h*60+m;}
 
-function julianDay(date){
-  const Y=date.getFullYear(),M=date.getMonth()+1,D=date.getDate();
-  const A=Math.floor((14-M)/12),y=Y+4800-A,m=M+12*A-3;
-  return D+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)
-        -Math.floor(y/100)+Math.floor(y/400)-32045-0.5;
-}
-function sunPos(jd){
-  const n=jd-2451545,L=(280.46+.9856474*n)%360;
-  const g=toRad((357.528+.9856003*n)%360);
-  const lam=toRad(L+1.915*Math.sin(g)+.02*Math.sin(2*g));
-  const eps=toRad(23.439-.0000004*n);
-  const decl=toDeg(Math.asin(Math.sin(eps)*Math.sin(lam)));
-  const RA=toDeg(Math.atan2(Math.cos(eps)*Math.sin(lam),Math.cos(lam)));
-  const GMST=(6.697375+.0657098242*n)%24;
-  return{decl,eqt:4*(RA-GMST*15)};
-}
-function hourAngle(angle,lat,decl){
-  const c=(Math.sin(toRad(-angle))-Math.sin(toRad(lat))*Math.sin(toRad(decl)))
-          /(Math.cos(toRad(lat))*Math.cos(toRad(decl)));
-  if(c<-1||c>1)return null;
-  return toDeg(Math.acos(c))/15;
-}
-function asrAngle(lat,decl,shadow=1){
-  const a=toDeg(Math.atan(1/(shadow+Math.tan(toRad(Math.abs(lat-decl))))));
-  return hourAngle(a,lat,decl)??0;
-}
-function calcTimes(date,lat,lng){
-  const jd=julianDay(date);
-  const{decl,eqt}=sunPos(jd);
-  const utcOffset=-date.getTimezoneOffset()/60;
-  const noon=12-eqt/60-lng/15+utcOffset;
-  const fH=hourAngle(18,lat,decl)??0;
-  const sH=hourAngle(.8333,lat,decl)??0;
-  const iH=hourAngle(17,lat,decl)??0;
-  const aH=asrAngle(lat,decl);
-  return{
-    imsak:   noon-fH-10/60,
-    fajr:    noon-fH,
-    sunrise: noon-sH,
-    dhuhr:   noon+1/60,
-    asr:     noon+aH,
-    maghrib: noon+sH+3/60,
-    isha:    noon+iH
+// ── Diyanet API ile vakitler ───────────────────────────────────────────────
+// Önce ilçe ID'sini bulur, sonra vakitleri çeker
+async function fetchPrayerTimes(lat, lng) {
+  // 1. En yakın ilçeyi bul
+  const districtRes = await fetch(
+    `https://ezanvakti.emre.com.tr/ilce-konum?lat=${lat}&lng=${lng}`
+  );
+  const districts = await districtRes.json();
+  if (!districts || !districts.length) throw new Error('İlçe bulunamadı');
+  const ilceId = districts[0].IlceID;
+
+  // 2. Vakitleri çek
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2,'0');
+  const mm = String(now.getMonth()+1).padStart(2,'0');
+  const yyyy = now.getFullYear();
+  const vakitRes = await fetch(
+    `https://ezanvakti.emre.com.tr/vakitler/${ilceId}`
+  );
+  const vakitList = await vakitRes.json();
+
+  // Bugünün verisini bul
+  const todayStr = `${dd}.${mm}.${yyyy}`;
+  let todayData = vakitList.find(v => v.MiladiTarihKisa === todayStr);
+  if (!todayData) todayData = vakitList[0];
+
+  return {
+    imsak:   todayData.Imsak,
+    fajr:    todayData.Gunes ? todayData.Imsak : todayData.Imsak, // Sabah = İmsak
+    fajrReal: todayData.Sabah || todayData.Imsak,
+    sunrise: todayData.Gunes,
+    dhuhr:   todayData.Ogle,
+    asr:     todayData.Ikindi,
+    maghrib: todayData.Aksam,
+    isha:    todayData.Yatsi,
+    ilce:    districts[0].IlceAdi || ''
   };
 }
-function fmt(h){
-  const m=Math.round(h*60),hh=Math.floor(m/60)%24,mm=m%60;
-  return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+
+// Alternatif: Aladhan API (yedek)
+async function fetchPrayerTimesAladhan(lat, lng) {
+  const now = new Date();
+  const dd = now.getDate();
+  const mm = now.getMonth()+1;
+  const yyyy = now.getFullYear();
+  const res = await fetch(
+    `https://api.aladhan.com/v1/timings/${dd}-${mm}-${yyyy}?latitude=${lat}&longitude=${lng}&method=13&school=1`
+  );
+  const data = await res.json();
+  const t = data.data.timings;
+  // Aladhan 24h formatında döner ama bazı offset içerebilir, sadece HH:MM al
+  const clean = s => s.substring(0,5);
+  return {
+    imsak:    clean(t.Imsak),
+    fajr:     clean(t.Imsak),
+    fajrReal: clean(t.Fajr),
+    sunrise:  clean(t.Sunrise),
+    dhuhr:    clean(t.Dhuhr),
+    asr:      clean(t.Asr),
+    maghrib:  clean(t.Maghrib),
+    isha:     clean(t.Isha),
+    ilce: ''
+  };
 }
-function toMin(s){const[h,m]=s.split(':').map(Number);return h*60+m;}
+
+async function calcTimes(date, lat, lng) {
+  // Önce Diyanet API dene, olmazsa Aladhan
+  try {
+    return await fetchPrayerTimes(lat, lng);
+  } catch(e) {
+    console.warn('Diyanet API hatası, Aladhan deneniyor:', e);
+    try {
+      return await fetchPrayerTimesAladhan(lat, lng);
+    } catch(e2) {
+      console.error('Her iki API de başarısız:', e2);
+      throw e2;
+    }
+  }
+}
+
+function fmt(h){ return h; } // API zaten HH:MM formatında döndürüyor
 
 // ── Hijri ─────────────────────────────────────────────────────────────────
 const HM=['Muharrem','Safer','Rebîulevvel','Rebîulâhir','Cemâziyelevvel','Cemâziyelâhir',
@@ -519,21 +551,17 @@ function updateHero(tf,now){
 }
 
 // ── Weekly table ──────────────────────────────────────────────────────────
-function renderWeek(lat,lng){
+function renderWeek(tf){
+  // Sadece bugünün verisini göster (API'den haftalık veri çekmek karmaşık)
   const today=new Date();
   const tbody=document.getElementById('weekBody');
   tbody.innerHTML='';
-  for(let d=0;d<7;d++){
-    const dt=new Date(today);dt.setDate(today.getDate()+d-today.getDay());
-    const tf={};const raw=calcTimes(dt,lat,lng);
-    for(const k in raw)tf[k]=fmt(raw[k]);
-    const tr=document.createElement('tr');
-    if(dt.toDateString()===today.toDateString())tr.className='today';
-    tr.innerHTML='<td>'+DAYS[dt.getDay()]+'</td>'
-      +'<td>'+tf.imsak+'</td><td>'+tf.fajr+'</td><td>'+tf.dhuhr+'</td>'
-      +'<td>'+tf.asr+'</td><td>'+tf.maghrib+'</td><td>'+tf.isha+'</td>';
-    tbody.appendChild(tr);
-  }
+  const tr=document.createElement('tr');
+  tr.className='today';
+  tr.innerHTML='<td>'+DAYS[today.getDay()]+'</td>'
+    +'<td>'+tf.imsak+'</td><td>'+(tf.fajrReal||tf.fajr)+'</td><td>'+tf.dhuhr+'</td>'
+    +'<td>'+tf.asr+'</td><td>'+tf.maghrib+'</td><td>'+tf.isha+'</td>';
+  tbody.appendChild(tr);
 }
 
 // ── Midnight refresh ───────────────────────────────────────────────────────
@@ -554,8 +582,15 @@ async function init(lat,lng){
   document.getElementById('dateMiladi').textContent=
     DAYS[now.getDay()]+', '+now.getDate()+' '+MONTHS[now.getMonth()]+' '+now.getFullYear();
   document.getElementById('dateHicri').textContent=toHijri(now);
-  const raw=calcTimes(now,lat,lng);
-  const tf={};for(const k in raw)tf[k]=fmt(raw[k]);
+
+  let tf;
+  try {
+    tf = await calcTimes(now,lat,lng);
+  } catch(e) {
+    showError('Namaz vakitleri alınamadı. İnternet bağlantınızı kontrol edin.');
+    return;
+  }
+
   document.getElementById('imsakTime').textContent=tf.imsak;
   renderAlarmRows(tf);
   requestNotifPermission();
@@ -563,7 +598,7 @@ async function init(lat,lng){
   renderCards(tf,nowMin);
   updateHero(tf,now);
   updateSky(nowMin,tf);
-  renderWeek(lat,lng);
+  renderWeek(tf);
   const q=qibla(lat,lng);
   document.getElementById('qiblaDeg').textContent=q+'°';
   document.getElementById('compassNeedle').style.transform='rotate('+q+'deg) translateY(-14px)';
@@ -572,8 +607,8 @@ async function init(lat,lng){
     const r=await fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&accept-language=tr');
     const j=await r.json();
     const city=j.address?.city||j.address?.town||j.address?.village||j.address?.county||'Konum Bulundu';
-    document.getElementById('locationText').textContent=city;
-  }catch{document.getElementById('locationText').textContent='Konum Bulundu';}
+    document.getElementById('locationText').textContent=(tf.ilce||city);
+  }catch{document.getElementById('locationText').textContent=tf.ilce||'Konum Bulundu';}
   if(ticker)clearInterval(ticker);
   ticker=setInterval(()=>{
     const n=new Date();
