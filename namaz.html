@@ -412,10 +412,10 @@ function calcTimes(date,lat,lng){
   const fajrHA  = HA(-18);
   // Güneş doğuş/batış: -0.8333°
   const srHA    = HA(-0.8333);
-  // İkindi: gölge = 1x boy
-  const asrCot  = 1 + Math.tan(toRad(Math.abs(lat - decl)));
-  const asrAngl = toDeg(Math.atan(1/asrCot));
-  const asrHA   = HA(asrAngl);
+  // İkindi: Hanefî (gölge = 2x boy)
+  const asrShadow = 2;
+  const asrElevation = toDeg(Math.atan(1/(asrShadow + Math.tan(toRad(Math.abs(lat - decl))))));
+  const asrHA = HA(asrElevation);
   // Yatsı: -17°
   const ishaHA  = HA(-17);
 
