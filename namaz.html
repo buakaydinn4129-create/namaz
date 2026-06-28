@@ -368,91 +368,105 @@ const swBlob = new Blob([swCode],{type:'text/javascript'});
 const swUrl  = URL.createObjectURL(swBlob);
 if('serviceWorker' in navigator) navigator.serviceWorker.register(swUrl).catch(()=>{});
 
-// ── Math helpers (sadece Kıble için) ──────────────────────────────────────
+// ── Math helpers ──────────────────────────────────────────────────────────
 const toRad = d=>d*Math.PI/180, toDeg = r=>r*180/Math.PI;
 function toMin(s){const[h,m]=s.split(':').map(Number);return h*60+m;}
 
-// ── Diyanet API ile vakitler ───────────────────────────────────────────────
-// Önce ilçe ID'sini bulur, sonra vakitleri çeker
-async function fetchPrayerTimes(lat, lng) {
-  // 1. En yakın ilçeyi bul
-  const districtRes = await fetch(
-    `https://ezanvakti.emre.com.tr/ilce-konum?lat=${lat}&lng=${lng}`
-  );
-  const districts = await districtRes.json();
-  if (!districts || !districts.length) throw new Error('İlçe bulunamadı');
-  const ilceId = districts[0].IlceID;
-
-  // 2. Vakitleri çek
-  const now = new Date();
-  const dd = String(now.getDate()).padStart(2,'0');
-  const mm = String(now.getMonth()+1).padStart(2,'0');
-  const yyyy = now.getFullYear();
-  const vakitRes = await fetch(
-    `https://ezanvakti.emre.com.tr/vakitler/${ilceId}`
-  );
-  const vakitList = await vakitRes.json();
-
-  // Bugünün verisini bul
-  const todayStr = `${dd}.${mm}.${yyyy}`;
-  let todayData = vakitList.find(v => v.MiladiTarihKisa === todayStr);
-  if (!todayData) todayData = vakitList[0];
-
-  return {
-    imsak:   todayData.Imsak,
-    fajr:    todayData.Gunes ? todayData.Imsak : todayData.Imsak, // Sabah = İmsak
-    fajrReal: todayData.Sabah || todayData.Imsak,
-    sunrise: todayData.Gunes,
-    dhuhr:   todayData.Ogle,
-    asr:     todayData.Ikindi,
-    maghrib: todayData.Aksam,
-    isha:    todayData.Yatsi,
-    ilce:    districts[0].IlceAdi || ''
-  };
+function julianDay(date){
+  const Y=date.getFullYear(),M=date.getMonth()+1,D=date.getDate();
+  const A=Math.floor((14-M)/12),y=Y+4800-A,m=M+12*A-3;
+  return D+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)
+        -Math.floor(y/100)+Math.floor(y/400)-32045-0.5;
 }
 
-// Alternatif: Aladhan API (yedek)
-async function fetchPrayerTimesAladhan(lat, lng) {
-  const now = new Date();
-  const dd = now.getDate();
-  const mm = now.getMonth()+1;
-  const yyyy = now.getFullYear();
-  const res = await fetch(
-    `https://api.aladhan.com/v1/timings/${dd}-${mm}-${yyyy}?latitude=${lat}&longitude=${lng}&method=13&school=1`
-  );
-  const data = await res.json();
-  const t = data.data.timings;
-  // Aladhan 24h formatında döner ama bazı offset içerebilir, sadece HH:MM al
-  const clean = s => s.substring(0,5);
+function calcTimes(date,lat,lng){
+  // UTC offset (Türkiye = +3)
+  const tz = -date.getTimezoneOffset()/60;
+  
+  const JD = julianDay(date);
+  const D = JD - 2451545.0;
+  
+  // Güneş ortalama hareketi
+  const g = toRad((357.529 + 0.98560028*D) % 360);
+  const q = (280.459 + 0.98564736*D) % 360;
+  const L = toRad((q + 1.915*Math.sin(g) + 0.020*Math.sin(2*g)) % 360);
+  
+  const e = toRad(23.439 - 0.00000036*D);
+  const RA = toDeg(Math.atan2(Math.cos(e)*Math.sin(L), Math.cos(L))) / 15;
+  const decl = toDeg(Math.asin(Math.sin(e)*Math.sin(L)));
+  
+  // Equation of time (dakika)
+  const EqT = q/15 - ((RA + 24) % 24);
+  
+  // Öğle vakti (yerel saat)
+  const noon = 12 - EqT - lng/15 + tz;
+  
+  function HA(angle){
+    const c = (Math.sin(toRad(angle)) - Math.sin(toRad(lat))*Math.sin(toRad(decl)))
+              / (Math.cos(toRad(lat))*Math.cos(toRad(decl)));
+    if(c<-1||c>1) return 0;
+    return toDeg(Math.acos(c))/15;
+  }
+  
+  // Sabah açısı: Diyanet -18° (astro twilight)
+  const fajrHA  = HA(-18);
+  // Güneş doğuş/batış: -0.8333°
+  const srHA    = HA(-0.8333);
+  // İkindi: gölge = 1x boy
+  const asrCot  = 1 + Math.tan(toRad(Math.abs(lat - decl)));
+  const asrAngl = toDeg(Math.atan(1/asrCot));
+  const asrHA   = HA(asrAngl);
+  // Yatsı: -17°
+  const ishaHA  = HA(-17);
+
+  function hm(h){
+    const total = Math.round(((h % 24) + 24) % 24 * 60);
+    const hh = Math.floor(total/60) % 24;
+    const mm = total % 60;
+    return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+  }
+
   return {
-    imsak:    clean(t.Imsak),
-    fajr:     clean(t.Imsak),
-    fajrReal: clean(t.Fajr),
-    sunrise:  clean(t.Sunrise),
-    dhuhr:    clean(t.Dhuhr),
-    asr:      clean(t.Asr),
-    maghrib:  clean(t.Maghrib),
-    isha:     clean(t.Isha),
+    imsak:   hm(noon - fajrHA - 10/60),
+    fajr:    hm(noon - fajrHA),
+    sunrise: hm(noon - srHA),
+    dhuhr:   hm(noon + 1/60),
+    asr:     hm(noon + asrHA),
+    maghrib: hm(noon + srHA + 3/60),
+    isha:    hm(noon + ishaHA),
     ilce: ''
   };
 }
 
-async function calcTimes(date, lat, lng) {
-  // Önce Diyanet API dene, olmazsa Aladhan
+async function calcTimesAsync(date,lat,lng){
+  // Önce Aladhan API dene
   try {
-    return await fetchPrayerTimes(lat, lng);
-  } catch(e) {
-    console.warn('Diyanet API hatası, Aladhan deneniyor:', e);
-    try {
-      return await fetchPrayerTimesAladhan(lat, lng);
-    } catch(e2) {
-      console.error('Her iki API de başarısız:', e2);
-      throw e2;
+    const dd=date.getDate(), mm=date.getMonth()+1, yyyy=date.getFullYear();
+    const res = await fetch(
+      `https://api.aladhan.com/v1/timings/${dd}-${mm}-${yyyy}?latitude=${lat}&longitude=${lng}&method=13&school=1`,
+      {signal: AbortSignal.timeout(5000)}
+    );
+    const data = await res.json();
+    if(data.code===200){
+      const t = data.data.timings;
+      const c = s=>s.substring(0,5);
+      return {
+        imsak:   c(t.Imsak),
+        fajr:    c(t.Fajr),
+        sunrise: c(t.Sunrise),
+        dhuhr:   c(t.Dhuhr),
+        asr:     c(t.Asr),
+        maghrib: c(t.Maghrib),
+        isha:    c(t.Isha),
+        ilce: ''
+      };
     }
-  }
+  } catch(e){ console.warn('Aladhan API hatası, yerel hesap kullanılıyor'); }
+  // Yedek: yerel hesap
+  return calcTimes(date, lat, lng);
 }
 
-function fmt(h){ return h; } // API zaten HH:MM formatında döndürüyor
+function fmt(h){ return h; } // zaten HH:MM formatında
 
 // ── Hijri ─────────────────────────────────────────────────────────────────
 const HM=['Muharrem','Safer','Rebîulevvel','Rebîulâhir','Cemâziyelevvel','Cemâziyelâhir',
@@ -585,10 +599,9 @@ async function init(lat,lng){
 
   let tf;
   try {
-    tf = await calcTimes(now,lat,lng);
+    tf = await calcTimesAsync(now,lat,lng);
   } catch(e) {
-    showError('Namaz vakitleri alınamadı. İnternet bağlantınızı kontrol edin.');
-    return;
+    tf = calcTimes(now,lat,lng);
   }
 
   document.getElementById('imsakTime').textContent=tf.imsak;
