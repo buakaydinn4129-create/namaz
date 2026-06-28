@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#0F2A4A"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Namaz"/>
+  <meta name="description" content="Günlük namaz vakitleri – otomatik konum"/>
+  <title>Namaz Vakitleri</title>
+  <link rel="apple-touch-icon" id="appleIcon"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    :root{
+      --navy:#0A1F3C;--deep:#0F2A4A;--teal:#0E6B6B;--teal2:#1A8A7A;
+      --mint:#2EBFA5;--gold:#F0C060;--white:#FFFFFF;
+      --muted:rgba(255,255,255,.55);--glass:rgba(255,255,255,.07);
+      --glass2:rgba(255,255,255,.12);--border:rgba(255,255,255,.1);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      background:var(--navy);color:var(--white);overflow-x:hidden}
+
+    /* SKY */
+    .sky{position:fixed;inset:0;z-index:0;
+      background:linear-gradient(175deg,#0A1628 0%,#0F2A4A 35%,#0E4A5A 65%,#1A6B6B 100%);
+      transition:background 2s ease}
+    .sky.dawn   {background:linear-gradient(175deg,#1A1035 0%,#3D1E5A 30%,#8B3A6B 60%,#E8804A 100%)}
+    .sky.morning{background:linear-gradient(175deg,#0D2545 0%,#1A5A7A 40%,#2E8A9A 70%,#5ABAC5 100%)}
+    .sky.noon   {background:linear-gradient(175deg,#083060 0%,#0E5A8A 35%,#1A8AAA 65%,#2EBBCC 100%)}
+    .sky.afternoon{background:linear-gradient(175deg,#0A2040 0%,#1A4A6B 40%,#1A7A7A 70%,#2EA090 100%)}
+    .sky.evening{background:linear-gradient(175deg,#1A0A30 0%,#3A1A55 30%,#7A3055 60%,#D06035 100%)}
+    .sky.night  {background:linear-gradient(175deg,#050B18 0%,#0A1628 40%,#0D1F38 70%,#102040 100%)}
+
+    .stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1.5s}
+    .stars.visible{opacity:1}
+    .star{position:absolute;background:#fff;border-radius:50%;animation:twinkle 3s infinite alternate}
+    @keyframes twinkle{from{opacity:.2;transform:scale(1)}to{opacity:1;transform:scale(1.4)}}
+    .moon{position:fixed;top:60px;right:30px;z-index:1;width:48px;height:48px;border-radius:50%;
+      background:radial-gradient(circle at 35% 35%,#FFF5D0,#E8C84A);
+      box-shadow:0 0 20px rgba(240,192,60,.5),0 0 60px rgba(240,192,60,.2);
+      opacity:0;transition:opacity 1.5s}
+    .moon.visible{opacity:1}
+    .sun{position:fixed;top:55px;right:28px;z-index:1;width:52px;height:52px;border-radius:50%;
+      background:radial-gradient(circle at 40% 40%,#FFF5A0,#F0C030);
+      box-shadow:0 0 30px rgba(240,192,48,.7),0 0 80px rgba(240,160,30,.3);
+      opacity:0;transition:opacity 1.5s}
+    .sun.visible{opacity:1}
+    .mosque-wrap{position:fixed;bottom:0;left:0;right:0;z-index:1;pointer-events:none}
+    .mosque-wrap svg{width:100%;height:auto;display:block}
+
+    /* APP */
+    .app{position:relative;z-index:10;min-height:100vh;padding:0 0 140px}
+    .header{padding:54px 20px 16px;display:flex;flex-direction:column;align-items:center;gap:4px}
+    .header-top{display:flex;align-items:center;gap:8px}
+    .logo-icon{font-size:28px}
+    .app-name{font-size:22px;font-weight:700;letter-spacing:.5px}
+    .location-row{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);
+      cursor:pointer;padding:5px 12px;border-radius:20px;
+      background:var(--glass);border:1px solid var(--border);transition:background .2s}
+    .location-row:hover{background:var(--glass2)}
+    .location-dot{width:7px;height:7px;border-radius:50%;background:var(--mint)}
+
+    /* DATE */
+    .date-section{text-align:center;padding:8px 20px 16px}
+    .date-miladi{font-size:15px;font-weight:600}
+    .date-hicri{font-size:12px;color:var(--muted);margin-top:2px}
+
+    /* HERO */
+    .hero{margin:0 16px 16px;
+      background:linear-gradient(135deg,rgba(14,107,107,.55),rgba(46,191,165,.25));
+      border:1px solid rgba(46,191,165,.35);border-radius:24px;
+      padding:24px 24px 20px;backdrop-filter:blur(12px);position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;
+      border-radius:50%;background:radial-gradient(circle,rgba(46,191,165,.18),transparent 70%)}
+    .hero-label{font-size:11px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;
+      color:var(--mint);margin-bottom:6px}
+    .hero-name{font-size:34px;font-weight:700;line-height:1}
+    .hero-time{font-size:52px;font-weight:300;letter-spacing:-1px;color:var(--gold);line-height:1.1}
+    .hero-countdown{display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+      padding:6px 14px;border-radius:20px;background:rgba(0,0,0,.25);
+      font-size:13px;color:var(--muted)}
+    .hero-countdown span{color:var(--white);font-weight:600}
+    .progress-bar{margin-top:16px;height:4px;background:rgba(255,255,255,.12);border-radius:4px;overflow:hidden}
+    .progress-fill{height:100%;border-radius:4px;
+      background:linear-gradient(90deg,var(--teal2),var(--mint));transition:width 1s linear}
+
+    /* PRAYERS GRID */
+    .prayers-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-bottom:16px}
+    .prayer-card{background:var(--glass);border:1px solid var(--border);border-radius:18px;
+      padding:14px 16px;display:flex;flex-direction:column;gap:4px;
+      backdrop-filter:blur(8px);transition:all .25s;position:relative;overflow:hidden}
+    .prayer-card.active{background:linear-gradient(135deg,rgba(14,107,107,.5),rgba(46,191,165,.2));
+      border-color:rgba(46,191,165,.5)}
+    .prayer-card.passed{opacity:.45}
+    .prayer-card.active::after{content:'';position:absolute;right:12px;top:12px;
+      width:8px;height:8px;border-radius:50%;background:var(--mint);
+      box-shadow:0 0 8px var(--mint);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
+    .card-icon{font-size:22px;line-height:1}
+    .card-name{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.5px}
+    .card-time{font-size:22px;font-weight:700}
+    .card-time.gold{color:var(--gold)}
+
+    /* IMSAK */
+    .imsak-banner{margin:0 16px 16px;
+      background:linear-gradient(135deg,rgba(240,192,60,.15),rgba(232,168,58,.08));
+      border:1px solid rgba(240,192,60,.3);border-radius:16px;padding:14px 18px;
+      display:flex;align-items:center;justify-content:space-between}
+    .imsak-left{display:flex;align-items:center;gap:10px}
+    .imsak-icon{font-size:20px}
+    .imsak-label{font-size:12px;color:var(--muted)}
+    .imsak-name{font-size:15px;font-weight:600}
+    .imsak-time{font-size:22px;font-weight:700;color:var(--gold)}
+
+    /* QIBLA */
+    .qibla-section{margin:0 16px 16px;background:var(--glass);border:1px solid var(--border);
+      border-radius:18px;padding:18px;display:flex;align-items:center;gap:16px}
+    .compass{width:60px;height:60px;flex-shrink:0;border:2px solid rgba(46,191,165,.4);
+      border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;
+      background:radial-gradient(circle,rgba(14,107,107,.3),transparent)}
+    .compass-needle{width:3px;height:28px;border-radius:2px;
+      background:linear-gradient(to bottom,var(--gold) 50%,rgba(255,255,255,.2) 50%);
+      transform-origin:bottom center;transition:transform 1s ease}
+    .qibla-info{flex:1}
+    .qibla-title{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+      color:var(--mint);margin-bottom:2px}
+    .qibla-deg{font-size:28px;font-weight:700}
+    .qibla-sub{font-size:12px;color:var(--muted)}
+
+    /* WEEKLY */
+    .week-section{margin:0 16px 16px}
+    .week-title{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+      color:var(--mint);margin-bottom:10px}
+    .week-table{width:100%;border-collapse:separate;border-spacing:0 6px}
+    .week-table th{font-size:11px;color:var(--muted);font-weight:500;text-align:left;
+      padding:0 8px 4px;letter-spacing:.5px}
+    .week-table td{font-size:12px;padding:10px 8px;background:var(--glass);
+      border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+    .week-table td:first-child{border-left:1px solid var(--border);border-radius:10px 0 0 10px;font-weight:600}
+    .week-table td:last-child{border-right:1px solid var(--border);border-radius:0 10px 10px 0}
+    .week-table tr.today td{background:rgba(46,191,165,.12);border-color:rgba(46,191,165,.3)}
+    .week-table tr.today td:first-child{color:var(--mint)}
+
+    /* ALARM TOGGLE */
+    .alarm-section{margin:0 16px 16px;background:var(--glass);border:1px solid var(--border);
+      border-radius:18px;padding:16px 18px}
+    .alarm-section-title{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+      color:var(--mint);margin-bottom:12px}
+    .alarm-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;
+      border-bottom:1px solid var(--border)}
+    .alarm-row:last-child{border-bottom:none}
+    .alarm-row-left{display:flex;align-items:center;gap:10px}
+    .alarm-icon{font-size:18px}
+    .alarm-name{font-size:14px;font-weight:600}
+    .alarm-time{font-size:12px;color:var(--muted);margin-top:2px}
+    .toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+    .toggle input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;inset:0;background:rgba(255,255,255,.15);
+      border-radius:24px;cursor:pointer;transition:.3s}
+    .toggle-slider:before{content:'';position:absolute;width:18px;height:18px;
+      left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
+    .toggle input:checked+.toggle-slider{background:var(--mint)}
+    .toggle input:checked+.toggle-slider:before{transform:translateX(20px)}
+    .alarm-note{font-size:11px;color:var(--muted);margin-top:10px;text-align:center}
+
+    /* INSTALL */
+    #installBanner{display:none;position:fixed;bottom:16px;left:16px;right:16px;z-index:100;
+      background:linear-gradient(135deg,#0E6B6B,#1A5A8A);
+      border:1px solid rgba(46,191,165,.5);border-radius:20px;padding:14px 16px;
+      box-shadow:0 8px 32px rgba(0,0,0,.5);align-items:center;gap:12px}
+    .install-icon{font-size:24px;flex-shrink:0}
+    .install-text{flex:1}
+    .install-text strong{display:block;font-size:14px}
+    .install-text small{font-size:12px;color:var(--muted)}
+    .install-btn{background:var(--mint);color:var(--navy);border:none;border-radius:12px;
+      padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0}
+    .install-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px}
+
+    /* LOADING */
+    #loadingScreen{position:fixed;inset:0;z-index:200;
+      background:linear-gradient(175deg,#0A1628,#0F2A4A,#0E4A5A);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+    .loading-logo{font-size:64px;animation:float 2s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    .loading-title{font-size:26px;font-weight:700;letter-spacing:1px}
+    .loading-sub{font-size:14px;color:var(--muted)}
+    .loading-bar{width:180px;height:3px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
+    .loading-fill{height:100%;width:0;border-radius:3px;
+      background:linear-gradient(90deg,var(--teal2),var(--mint));animation:loadbar 2s ease forwards}
+    @keyframes loadbar{0%{width:0}100%{width:100%}}
+
+    /* ERROR */
+    .error-box{margin:20px 16px;padding:18px;
+      background:rgba(220,60,60,.15);border:1px solid rgba(220,60,60,.3);
+      border-radius:16px;text-align:center}
+    .error-box p{font-size:14px;color:#FF8A8A;margin-bottom:10px}
+    .retry-btn{background:var(--teal2);border:none;color:#fff;
+      padding:10px 24px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer}
+
+    @media(min-width:420px){
+      .hero-time{font-size:60px}
+      .prayers-grid{grid-template-columns:repeat(3,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<div id="loadingScreen">
+  <div class="loading-logo">🕌</div>
+  <div class="loading-title">Namaz Vakitleri</div>
+  <div class="loading-sub">Konum alınıyor…</div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+
+<div class="sky" id="sky"></div>
+<div class="stars" id="stars"></div>
+<div class="moon" id="moon"></div>
+<div class="sun" id="sun"></div>
+
+<div class="mosque-wrap">
+  <svg viewBox="0 0 390 130" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+    <defs>
+      <linearGradient id="mg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#061220" stop-opacity="0.85"/>
+        <stop offset="100%" stop-color="#020810" stop-opacity="0.95"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="100" width="390" height="30" fill="url(#mg)"/>
+    <ellipse cx="195" cy="88" rx="52" ry="30" fill="url(#mg)"/>
+    <rect x="143" y="88" width="104" height="20" fill="url(#mg)"/>
+    <polygon points="195,52 191,72 199,72" fill="url(#mg)"/>
+    <text x="192" y="58" font-size="10" fill="rgba(240,192,60,0.7)">☽</text>
+    <rect x="118" y="55" width="14" height="55" rx="3" fill="url(#mg)"/>
+    <ellipse cx="125" cy="54" rx="9" ry="14" fill="url(#mg)"/>
+    <polygon points="125,34 122,48 128,48" fill="url(#mg)"/>
+    <text x="122" y="40" font-size="7" fill="rgba(240,192,60,0.6)">☽</text>
+    <rect x="258" y="55" width="14" height="55" rx="3" fill="url(#mg)"/>
+    <ellipse cx="265" cy="54" rx="9" ry="14" fill="url(#mg)"/>
+    <polygon points="265,34 262,48 268,48" fill="url(#mg)"/>
+    <text x="262" y="40" font-size="7" fill="rgba(240,192,60,0.6)">☽</text>
+    <ellipse cx="143" cy="93" rx="22" ry="14" fill="url(#mg)"/>
+    <rect x="121" y="93" width="44" height="17" fill="url(#mg)"/>
+    <ellipse cx="247" cy="93" rx="22" ry="14" fill="url(#mg)"/>
+    <rect x="225" y="93" width="44" height="17" fill="url(#mg)"/>
+    <rect x="90" y="98" width="210" height="32" fill="url(#mg)"/>
+    <rect x="30" y="82" width="70" height="48" rx="2" fill="url(#mg)"/>
+    <rect x="290" y="82" width="70" height="48" rx="2" fill="url(#mg)"/>
+  </svg>
+</div>
+
+<div class="app" id="appContent" style="opacity:0;transition:opacity .5s">
+  <div class="header">
+    <div class="header-top">
+      <span class="logo-icon">🕌</span>
+      <span class="app-name">Namaz Vakitleri</span>
+    </div>
+    <div class="location-row" onclick="refreshLocation()">
+      <div class="location-dot"></div>
+      <span id="locationText">Konum alınıyor…</span>
+      <span style="color:var(--muted);font-size:11px">↻</span>
+    </div>
+  </div>
+
+  <div class="date-section">
+    <div class="date-miladi" id="dateMiladi"></div>
+    <div class="date-hicri" id="dateHicri"></div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-label">Sıradaki Namaz</div>
+    <div class="hero-name" id="heroName">—</div>
+    <div class="hero-time" id="heroTime">——:——</div>
+    <div class="hero-countdown">⏱ Kalan: <span id="heroCountdown">hesaplanıyor…</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="imsak-banner">
+    <div class="imsak-left">
+      <span class="imsak-icon">🌙</span>
+      <div>
+        <div class="imsak-label">Sahur Sonu</div>
+        <div class="imsak-name">İmsak</div>
+      </div>
+    </div>
+    <div class="imsak-time" id="imsakTime">——:——</div>
+  </div>
+
+  <div class="prayers-grid" id="prayersGrid"></div>
+
+  <div class="qibla-section">
+    <div class="compass"><div class="compass-needle" id="compassNeedle"></div></div>
+    <div class="qibla-info">
+      <div class="qibla-title">Kıble Yönü</div>
+      <div class="qibla-deg" id="qiblaDeg">—°</div>
+      <div class="qibla-sub" id="qiblaSub">Konum bekleniyor</div>
+    </div>
+  </div>
+
+  <div class="week-section">
+    <div class="week-title">Bu Haftanın Vakitleri</div>
+    <table class="week-table">
+      <thead>
+        <tr>
+          <th>Gün</th><th>İmsak</th><th>Sabah</th><th>Öğle</th><th>İkindi</th><th>Akşam</th><th>Yatsı</th>
+        </tr>
+      </thead>
+      <tbody id="weekBody"></tbody>
+    </table>
+  </div>
+
+  <!-- ALARM SECTION -->
+  <div class="alarm-section" id="alarmSection">
+    <div class="alarm-section-title">🔔 Ezan Alarmı (20 dk önce)</div>
+    <div id="alarmRows"></div>
+    <div class="alarm-note" id="alarmNote">Bildirimlere izin verin</div>
+  </div>
+
+  <div class="error-box" id="errorBox" style="display:none">
+    <p id="errorMsg">Konum alınamadı.</p>
+    <button class="retry-btn" onclick="refreshLocation()">Tekrar Dene</button>
+  </div>
+</div>
+
+<div id="installBanner">
+  <span class="install-icon">📲</span>
+  <div class="install-text">
+    <strong>Ana Ekrana Ekle</strong>
+    <small>İnternet olmadan da çalışır</small>
+  </div>
+  <button class="install-btn" id="installBtn">Ekle</button>
+  <button class="install-close" onclick="document.getElementById('installBanner').style.display='none'">✕</button>
+</div>
+
+<script>
+// ── Icons & Manifest (inline PWA) ──────────────────────────────────────────
+const ICON192 = 'data:image/png;base64,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';
+const ICON512 = 'data:image/png;base64,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FpubnTJAVEKfnBQAsjMVIBrBTwm8DZANec+FW99786Mi8ClFgCb153jutVYWn0Uu3gXAfYWcC7deffP+7YHnlQHqtnk+l7LGiuIzycYtAIrWb56KALW5FPxQIAWAKpgKUAOhT00UAKqjDFASoU+tFACqpgyQg9CnBWvfv6BX+7nw7sam/KAyQGKb51fta6UkPst8TABokjJACu+60qdhCgDN297EFQL2EfhEogAQjkJAT+ATmQJAeApBHAIf7lMAYMuukFAK6iPs4TCPAuY+58Je735/Ryn4glJQil1/Ps7nSvhzysbLgNjgXBjj3e//945S8OtKwcx2fe7O3Zr5s8vFLQBIaHc43aUcDHfocwTSUABgIcdCLVJBEPCQnwLAPdd+9xNhAqhE79/8ae5DWIxzDfK7lvsAAIDlKQAAEJACAAABKQAAEJACAAABKQAAEJACAAABeRcAAPnIoGxMAAAgIAUAAALyNkAAMpJBuZgAAEBACgAABKQAAEBACgAABKQAAEBACgAABKQAAEBACgAABORdAADkI4OyMQEAgIAUAAAISAEAgIAUAAAIyNsAAchIBuViAgAAASkAABCQAgAAASkAABCQAgAAASkAABCQdwEAkI8MysYEAAACUgAAICAFAAACUgAAICAFAAACUgAAICBvAwQgIxmUiwkAAASkAABAQAoAAASkAABAQN4FAEA+MigbEwAACEgBAICAFAAACEgBAICAFAAACEgBAICAFAAACEgBAICAvA0QgIxkUC4mAAAQkAIAAAF5FwAA+cigbEwAACAgBQAAAlIAACAgBQAAAlrnPoCUfv6bN17NfQxj/fzOndyHsOnt3AcABFPZvn3t3289n/sYUjEBAICAFAAACEgBAICAFAAACEgBAICAvA0QAAZrJzO9CwAAhmooM90CAICAFAAACEgBAICAFAAACEgBAICAFAAACEgBAICAFAAACEgBAICAFAAACEgBAICA1t2qoQcbA8CcGspMEwAACEgBAICAFAAACEgBAICAFAAACEgBAICAFAAACEgBAICAFAAACEgBAICAFAAACGjdtfNYYwCYV0OZuc59ACld+8/3ns99DABQg3VTdQYAGMR3AAAgIAUAAAJSAAAgIAUAAAJSAAAgIAUAAAJSAAAgIAUAAAJSAAAgIO8CAICATAAAICAFAAACUgAAICBvAwSAgEwAACAgBQAAAlIAACAgBQAAAlIAACAgBQAAAlIAACAg7wIAgIBMAAAgoLUBAADEYwIAAAEpAAAQkAIAAAF5GyAABGQCAAABKQAAEJACAAABKQAAEJBHAQNAQCYAABCQAgAAASkAABCQAgAAASkAABCQAgAAASkAABCQAgAAAXkbIAAEZAIAAAEpAAAQkHcBAEBAJgAAEJACAAABKQAAEJACAAABKQAAEJACAAABKQAAEJACAAABKQAAEJACAAABeRsgAATkXQAAEJBbAAAQkAIAAAFd63wJAACiWZkAAEBACgAABKQAAEBACgAABKQAAEBACgAABNQXAL8KCAAxrLrOBAAAQlp3Kxf/ABCNCQAABKQAAEBAmwXAvQAAaNu9rDcBAICAFAAACEgBAICAtguA7wEAQJsuZbwJAAAEpAAAQEC7CoDbAADQlivZbgIAAAGtXe8DQDwmAAAQ0HrPLf9V13V3Fj4WACC9nUFvAgAAAR0qAL4dAAB125vlJgAAEJACAAABHSsAbgMAQJ0OZrgJAAAENKQAmAIAQF2OZrcJAAAENLQAmAIAQB0GZbZ3AQBAQG4BAEBAYwqAWQEAlG1wVpsAAEBA+94GuI+3BAJAmUYF+ikTALcCAKAso7PZLQAACOjUAmAKAABlOCmTTQAAIKApBcAUAADyOjmLTQAAIKCpBcAUAADymJTBKd4F4NkAALCsyentFgAABJSqALgVAADLSJK5KScASgAAzCtZ1qa+BaAEAMA8kmas7wAAQEBj3wY4hN8KAIC0kof1XBMAtwIAII1ZMnXOWwBKAABMM1uW+g4AAAQ0dwEwBQCA08yaoUtMAJQAABhn9uxM8S6AIfxmAAAMs0gyL/kdAJMAADhssaxc+kuASgAA7LZoRub4LQAlAAAuWzwbc/0aoBIAAHdlycSczwFQAgCILlsW5n4QkBIAQFRZMzB3Aeg6JQCAeLJn3xxvAzyF5wQAEEURwVvCBKBXxAcCADMqJutKKgBdV9AHAwCJFZVxpRWArivsAwKABIrLtqXeBTBWf1S+FwBAzcpM2a7MCcCmYj84ADii6AwrvQB0XeEfIADsUHx2rXMfwEBuCQBQg+KDv1fDBGBTNR8sAOFUlVG1FYCuq+wDBiCE6rKpllsA29wSAKAE1QV/r8YJwKZqP3gAqld1BtU6AdhkGgDAkqoO/l4LBaCnCAAwpyaCv1fK2wBTUgQASKm5oOy6+r8DcEiTf2AALKrZLCn1XQCpmAYAcIq207Fr6zsAh2z+QSoDAOzSfOhvilIANpkKALApVPD3IhaAniIAEFvI4O9FLgA9twcA4ggd+psUgMtMBQDaJPi3KAC7bZ8oCgFAXQT+EQrAMG4TAJRP6I+gAIxnOgBQBoE/gQIw3a4TUCkASEvYJ6YAzOPQiaocAOwm5Bf0C1GH48C4SjgqAAAAAElFTkSuQmCC';
+
+// Set apple touch icon
+document.getElementById('appleIcon').href = ICON512;
+
+// Inline manifest
+const manifestData = {
+  name:"Namaz Vakitleri",short_name:"Namaz",
+  description:"Günlük namaz vakitleri",start_url:"./",
+  display:"standalone",background_color:"#0F2A4A",theme_color:"#1A6B6B",
+  orientation:"portrait",
+  icons:[
+    {src:ICON192,sizes:"192x192",type:"image/png",purpose:"any maskable"},
+    {src:ICON512,sizes:"512x512",type:"image/png",purpose:"any maskable"}
+  ]
+};
+const mBlob = new Blob([JSON.stringify(manifestData)],{type:'application/manifest+json'});
+const mUrl  = URL.createObjectURL(mBlob);
+const mLink = document.createElement('link');
+mLink.rel='manifest'; mLink.href=mUrl;
+document.head.appendChild(mLink);
+
+// ── Service Worker (inline) ──────────────────────────────────────────────
+const swCode = `
+const CACHE='namaz-v2';
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./',location.href]))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
+`;
+const swBlob = new Blob([swCode],{type:'text/javascript'});
+const swUrl  = URL.createObjectURL(swBlob);
+if('serviceWorker' in navigator) navigator.serviceWorker.register(swUrl).catch(()=>{});
+
+// ── Math helpers ──────────────────────────────────────────────────────────
+const toRad = d=>d*Math.PI/180, toDeg = r=>r*180/Math.PI;
+function toMin(s){const[h,m]=s.split(':').map(Number);return h*60+m;}
+
+function julianDay(date){
+  const Y=date.getFullYear(),M=date.getMonth()+1,D=date.getDate();
+  const A=Math.floor((14-M)/12),y=Y+4800-A,m=M+12*A-3;
+  return D+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)
+        -Math.floor(y/100)+Math.floor(y/400)-32045-0.5;
+}
+
+function calcTimes(date,lat,lng){
+  // UTC offset (Türkiye = +3)
+  const tz = -date.getTimezoneOffset()/60;
+  
+  const JD = julianDay(date);
+  const D = JD - 2451545.0;
+  
+  // Güneş ortalama hareketi
+  const g = toRad((357.529 + 0.98560028*D) % 360);
+  const q = (280.459 + 0.98564736*D) % 360;
+  const L = toRad((q + 1.915*Math.sin(g) + 0.020*Math.sin(2*g)) % 360);
+  
+  const e = toRad(23.439 - 0.00000036*D);
+  const RA = toDeg(Math.atan2(Math.cos(e)*Math.sin(L), Math.cos(L))) / 15;
+  const decl = toDeg(Math.asin(Math.sin(e)*Math.sin(L)));
+  
+  // Equation of time (dakika)
+  const EqT = q/15 - ((RA + 24) % 24);
+  
+  // Öğle vakti (yerel saat)
+  const noon = 12 - EqT - lng/15 + tz;
+  
+  function HA(angle){
+    // angle: negatif = ufkun altı (sabah/akşam), pozitif = ufkun üstü (ikindi)
+    const sinA = Math.sin(toRad(angle));
+    const c = (sinA - Math.sin(toRad(lat))*Math.sin(toRad(decl)))
+              / (Math.cos(toRad(lat))*Math.cos(toRad(decl)));
+    if(c<-1||c>1) return 0;
+    return toDeg(Math.acos(c))/15;
+  }
+
+  // Sabah: -18°
+  const fajrHA  = HA(-18);
+  // Güneş doğuş/batış: -0.8333°
+  const srHA    = HA(-0.8333);
+  // İkindi: Şafii (gölge = 1x boy) - yükseklik açısı POZİTİF
+  const asrElevation = toDeg(Math.atan(1/(1 + Math.tan(toRad(Math.abs(lat - decl))))));
+  const asrHA = HA(asrElevation);
+  // Yatsı: -17°
+  const ishaHA  = HA(-17);
+
+  function hm(h){
+    const total = Math.round(((h % 24) + 24) % 24 * 60);
+    const hh = Math.floor(total/60) % 24;
+    const mm = total % 60;
+    return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+  }
+
+  return {
+    imsak:   hm(noon - fajrHA - 10/60),
+    fajr:    hm(noon - fajrHA),
+    sunrise: hm(noon - srHA),
+    dhuhr:   hm(noon + 1/60),
+    asr:     hm(noon + asrHA),
+    maghrib: hm(noon + srHA + 3/60),
+    isha:    hm(noon + ishaHA),
+    ilce: ''
+  };
+}
+
+async function calcTimesAsync(date,lat,lng){
+  // Önce Aladhan API dene
+  try {
+    const dd=date.getDate(), mm=date.getMonth()+1, yyyy=date.getFullYear();
+    const res = await fetch(
+      `https://api.aladhan.com/v1/timings/${dd}-${mm}-${yyyy}?latitude=${lat}&longitude=${lng}&method=13&school=1`,
+      {signal: AbortSignal.timeout(5000)}
+    );
+    const data = await res.json();
+    if(data.code===200){
+      const t = data.data.timings;
+      const c = s=>s.substring(0,5);
+      return {
+        imsak:   c(t.Imsak),
+        fajr:    c(t.Fajr),
+        sunrise: c(t.Sunrise),
+        dhuhr:   c(t.Dhuhr),
+        asr:     c(t.Asr),
+        maghrib: c(t.Maghrib),
+        isha:    c(t.Isha),
+        ilce: ''
+      };
+    }
+  } catch(e){ console.warn('Aladhan API hatası, yerel hesap kullanılıyor'); }
+  // Yedek: yerel hesap
+  return calcTimes(date, lat, lng);
+}
+
+function fmt(h){ return h; } // zaten HH:MM formatında
+
+// ── Hijri ─────────────────────────────────────────────────────────────────
+const HM=['Muharrem','Safer','Rebîulevvel','Rebîulâhir','Cemâziyelevvel','Cemâziyelâhir',
+          'Recep','Şaban','Ramazan','Şevval','Zilkade','Zilhicce'];
+function toHijri(date){
+  const jd=julianDay(date)+0.5,z=Math.floor(jd);
+  let a=z;
+  if(z>=2299161){const al=Math.floor((z-1867216.25)/36524.25);a=z+1+al-Math.floor(al/4);}
+  const jdH=z-1948438.5+0.5;
+  let hy=Math.floor((30*jdH+10646)/10631);
+  let hm=Math.min(12,Math.ceil((jdH-29.5*Math.floor((6+11*hy)/11)-227013)/29.5));
+  let hd=Math.floor(jdH)-Math.floor(29.5001*hm+227013+.5)-Math.floor((11*hy+3)/30)+1;
+  if(hd<=0){hm--;if(hm<=0){hm=12;hy--;}hd=29;}
+  if(hd>30){hd=1;hm++;if(hm>12){hm=1;hy++;}}
+  return hd+' '+HM[hm-1]+' '+hy;
+}
+
+// ── Turkish ───────────────────────────────────────────────────────────────
+const DAYS=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const PRAYERS=[
+  {key:'fajr',   name:'Sabah', icon:'🌅'},
+  {key:'sunrise',name:'Güneş', icon:'☀️'},
+  {key:'dhuhr',  name:'Öğle',  icon:'🌤'},
+  {key:'asr',    name:'İkindi',icon:'🌇'},
+  {key:'maghrib',name:'Akşam', icon:'🌆'},
+  {key:'isha',   name:'Yatsı', icon:'🌙'},
+];
+function c8(d){return['Kuzey','Kuzeydoğu','Doğu','Güneydoğu','Güney','Güneybatı','Batı','Kuzeybatı'][Math.round(d/45)%8];}
+
+// ── Qibla ─────────────────────────────────────────────────────────────────
+function qibla(lat,lng){
+  const mLat=toRad(21.4225),mLng=toRad(39.8262),uLat=toRad(lat),dLng=toRad(lng)-mLng;
+  let d=toDeg(Math.atan2(Math.sin(-dLng),Math.cos(uLat)*Math.tan(mLat)-Math.sin(uLat)*Math.cos(-dLng)));
+  return Math.round((d+360)%360);
+}
+
+// ── Sky ───────────────────────────────────────────────────────────────────
+function updateSky(nowMin,tf){
+  const sky=document.getElementById('sky'),stars=document.getElementById('stars'),
+        moon=document.getElementById('moon'),sun=document.getElementById('sun');
+  const f=toMin(tf.fajr),sr=toMin(tf.sunrise),dh=toMin(tf.dhuhr),
+        a=toMin(tf.asr),mg=toMin(tf.maghrib),i=toMin(tf.isha);
+  sky.className='sky';stars.className='stars';moon.className='moon';sun.className='sun';
+  if(nowMin<f-30||nowMin>=i+60){sky.classList.add('night');stars.classList.add('visible');moon.classList.add('visible');}
+  else if(nowMin<f){sky.classList.add('dawn');stars.classList.add('visible');moon.classList.add('visible');}
+  else if(nowMin<sr+30){sky.classList.add('dawn');sun.classList.add('visible');}
+  else if(nowMin<dh){sky.classList.add('morning');sun.classList.add('visible');}
+  else if(nowMin<a){sky.classList.add('noon');sun.classList.add('visible');}
+  else if(nowMin<mg){sky.classList.add('afternoon');sun.classList.add('visible');}
+  else if(nowMin<i){sky.classList.add('evening');moon.classList.add('visible');}
+  else{sky.classList.add('night');stars.classList.add('visible');moon.classList.add('visible');}
+}
+
+// ── Stars ─────────────────────────────────────────────────────────────────
+(function makeStars(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div'),sz=Math.random()*2.5+.5;
+    s.className='star';
+    s.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*70+'%;left:'+Math.random()*100+'%;'
+      +'animation-delay:'+Math.random()*3+'s;animation-duration:'+(2+Math.random()*3)+'s';
+    c.appendChild(s);
+  }
+})();
+
+// ── Render ────────────────────────────────────────────────────────────────
+function renderCards(tf,nowMin){
+  const grid=document.getElementById('prayersGrid');
+  grid.innerHTML='';
+  const mins=PRAYERS.map(p=>toMin(tf[p.key]));
+  let ai=-1;for(let i=mins.length-1;i>=0;i--)if(nowMin>=mins[i]){ai=i;break;}
+  PRAYERS.forEach((p,i)=>{
+    const c=document.createElement('div');c.className='prayer-card';
+    if(i===ai)c.classList.add('active');
+    if(i<ai)c.classList.add('passed');
+    c.innerHTML='<div class="card-icon">'+p.icon+'</div>'
+      +'<div class="card-name">'+p.name+'</div>'
+      +'<div class="card-time'+(i===ai?' gold':'')+'">'+tf[p.key]+'</div>';
+    grid.appendChild(c);
+  });
+}
+
+function updateHero(tf,now){
+  const nowMin=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+  const mins=PRAYERS.map(p=>toMin(tf[p.key]));
+  let ni=mins.findIndex(m=>m>nowMin);if(ni===-1)ni=0;
+  const prev=ni===0?mins[mins.length-1]-1440:mins[ni-1];
+  const nxt=mins[ni];
+  document.getElementById('heroName').textContent=PRAYERS[ni].name;
+  document.getElementById('heroTime').textContent=tf[PRAYERS[ni].key];
+  document.getElementById('progressFill').style.width=Math.max(0,Math.min(100,((nowMin-prev)/(nxt-prev))*100))+'%';
+  let diff=Math.round((nxt-nowMin)*60);if(diff<0)diff+=86400;
+  const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60),s=diff%60;
+  document.getElementById('heroCountdown').textContent=h>0?h+' sa '+m+' dk':m+' dk '+String(s).padStart(2,'0')+' sn';
+}
+
+// ── Weekly table ──────────────────────────────────────────────────────────
+function renderWeek(tf){
+  // Sadece bugünün verisini göster (API'den haftalık veri çekmek karmaşık)
+  const today=new Date();
+  const tbody=document.getElementById('weekBody');
+  tbody.innerHTML='';
+  const tr=document.createElement('tr');
+  tr.className='today';
+  tr.innerHTML='<td>'+DAYS[today.getDay()]+'</td>'
+    +'<td>'+tf.imsak+'</td><td>'+(tf.fajrReal||tf.fajr)+'</td><td>'+tf.dhuhr+'</td>'
+    +'<td>'+tf.asr+'</td><td>'+tf.maghrib+'</td><td>'+tf.isha+'</td>';
+  tbody.appendChild(tr);
+}
+
+// ── Midnight refresh ───────────────────────────────────────────────────────
+function scheduleMidnightRefresh(){
+  const now=new Date();
+  const msUntilMidnight=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1)-now;
+  setTimeout(()=>{
+    if(window._lat)init(window._lat,window._lng);
+    scheduleMidnightRefresh();
+  },msUntilMidnight+1000);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+let ticker=null;
+async function init(lat,lng){
+  window._lat=lat;window._lng=lng;
+  const now=new Date();
+  document.getElementById('dateMiladi').textContent=
+    DAYS[now.getDay()]+', '+now.getDate()+' '+MONTHS[now.getMonth()]+' '+now.getFullYear();
+  document.getElementById('dateHicri').textContent=toHijri(now);
+
+  let tf;
+  try {
+    tf = await calcTimesAsync(now,lat,lng);
+  } catch(e) {
+    tf = calcTimes(now,lat,lng);
+  }
+
+  document.getElementById('imsakTime').textContent=tf.imsak;
+  renderAlarmRows(tf);
+  requestNotifPermission();
+  const nowMin=now.getHours()*60+now.getMinutes();
+  renderCards(tf,nowMin);
+  updateHero(tf,now);
+  updateSky(nowMin,tf);
+  renderWeek(tf);
+  const q=qibla(lat,lng);
+  document.getElementById('qiblaDeg').textContent=q+'°';
+  document.getElementById('compassNeedle').style.transform='rotate('+q+'deg) translateY(-14px)';
+  document.getElementById('qiblaSub').textContent="Mekke'ye "+q+'° '+c8(q);
+  try{
+    const r=await fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&accept-language=tr');
+    const j=await r.json();
+    const city=j.address?.city||j.address?.town||j.address?.village||j.address?.county||'Konum Bulundu';
+    document.getElementById('locationText').textContent=(tf.ilce||city);
+  }catch{document.getElementById('locationText').textContent=tf.ilce||'Konum Bulundu';}
+  if(ticker)clearInterval(ticker);
+  ticker=setInterval(()=>{
+    const n=new Date();
+    const nm=n.getHours()*60+n.getMinutes();
+    updateHero(tf,n);
+    updateSky(nm,tf);
+    // Update date label in case day changed
+    document.getElementById('dateMiladi').textContent=
+      DAYS[n.getDay()]+', '+n.getDate()+' '+MONTHS[n.getMonth()]+' '+n.getFullYear();
+  },1000);
+}
+
+function refreshLocation(){
+  document.getElementById('locationText').textContent='Alınıyor…';
+  document.getElementById('errorBox').style.display='none';
+  if(!navigator.geolocation){showError('Tarayıcınız konum özelliğini desteklemiyor.');return;}
+  navigator.geolocation.getCurrentPosition(
+    pos=>init(pos.coords.latitude,pos.coords.longitude),
+    ()=>showError('Konum izni reddedildi. Lütfen tarayıcı ayarlarından konum iznini açın.'),
+    {enableHighAccuracy:true,timeout:12000}
+  );
+}
+function showError(msg){
+  document.getElementById('errorMsg').textContent=msg;
+  document.getElementById('errorBox').style.display='block';
+  document.getElementById('locationText').textContent='Konum alınamadı';
+}
+
+// ── PWA install prompt ────────────────────────────────────────────────────
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  const b=document.getElementById('installBanner');b.style.display='flex';
+  document.getElementById('installBtn').onclick=async()=>{
+    b.style.display='none';deferredPrompt.prompt();
+    await deferredPrompt.userChoice;deferredPrompt=null;
+  };
+});
+
+// ── Boot ──────────────────────────────────────────────────────────────────
+setTimeout(()=>{
+  const ls=document.getElementById('loadingScreen');
+  ls.style.transition='opacity .5s';ls.style.opacity='0';
+  setTimeout(()=>{ls.style.display='none';document.getElementById('appContent').style.opacity='1';},500);
+},2200);
+
+// ── EZAN ALARM SYSTEM ────────────────────────────────────────────────────
+
+// Ezan sesi - Web Audio API ile sentetik ezan
+function playEzanSound(){
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  
+  // Ezan melodisi - basit notalar (Hz frekansları)
+  const notes = [
+    // Allahu Ekber teması
+    {f:440,d:0.5},{f:392,d:0.3},{f:440,d:0.4},{f:494,d:0.6},{f:440,d:0.8},
+    {f:0,d:0.2},
+    {f:392,d:0.4},{f:440,d:0.4},{f:392,d:0.3},{f:349,d:0.7},
+    {f:0,d:0.3},
+    {f:392,d:0.4},{f:440,d:0.5},{f:494,d:0.4},{f:523,d:0.9},
+    {f:0,d:0.2},
+    {f:494,d:0.3},{f:440,d:0.4},{f:392,d:0.8},
+    {f:0,d:0.4},
+    {f:349,d:0.4},{f:392,d:0.5},{f:440,d:1.2}
+  ];
+  
+  let t = ctx.currentTime + 0.1;
+  notes.forEach(({f,d})=>{
+    if(f === 0){ t += d; return; }
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(f, t);
+    // Vibrato benzeri etki
+    osc.frequency.linearRampToValueAtTime(f * 1.02, t + d * 0.3);
+    osc.frequency.linearRampToValueAtTime(f, t + d * 0.7);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.3, t + 0.05);
+    gain.gain.linearRampToValueAtTime(0.25, t + d - 0.1);
+    gain.gain.linearRampToValueAtTime(0, t + d);
+    osc.start(t);
+    osc.stop(t + d);
+    t += d;
+  });
+}
+
+// Alarm durumları localStorage'da sakla
+function getAlarmState(){
+  try{ return JSON.parse(localStorage.getItem('namazAlarms')||'{}'); }catch{ return {}; }
+}
+function setAlarmState(state){
+  try{ localStorage.setItem('namazAlarms', JSON.stringify(state)); }catch{}
+}
+
+// Bildirim gönder + ezan çal
+async function fireAlarm(prayerName, prayerTime){
+  playEzanSound();
+  if(Notification.permission === 'granted'){
+    new Notification('🕌 ' + prayerName + ' Vakti Yaklaşıyor', {
+      body: prayerName + ' namazı saat ' + prayerTime + "'te. 20 dakikan var!",
+      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🕌</text></svg>',
+      tag: 'namaz-' + prayerName,
+      requireInteraction: false
+    });
+  }
+}
+
+// Her dakika kontrol et
+let _alarmTimes = {};
+let _alarmInterval = null;
+
+function startAlarmChecker(){
+  if(_alarmInterval) clearInterval(_alarmInterval);
+  _alarmInterval = setInterval(()=>{
+    const state = getAlarmState();
+    const now = new Date();
+    const nowH = now.getHours();
+    const nowM = now.getMinutes();
+    const nowStr = String(nowH).padStart(2,'0') + ':' + String(nowM).padStart(2,'0');
+    
+    Object.keys(_alarmTimes).forEach(key=>{
+      if(!state[key]) return; // bu alarm kapalı
+      const prayerTimeStr = _alarmTimes[key].time;
+      const prayerName = _alarmTimes[key].name;
+      const [ph, pm] = prayerTimeStr.split(':').map(Number);
+      const alarmMin = ph * 60 + pm - 20;
+      const alarmH = Math.floor(((alarmMin % 1440) + 1440) % 1440 / 60);
+      const alarmM = ((alarmMin % 1440) + 1440) % 1440 % 60;
+      const alarmStr = String(alarmH).padStart(2,'0') + ':' + String(alarmM).padStart(2,'0');
+      if(alarmStr === nowStr){
+        const fireKey = key + '_' + alarmStr + '_' + now.toDateString();
+        if(!sessionStorage.getItem(fireKey)){
+          sessionStorage.setItem(fireKey,'1');
+          fireAlarm(prayerName, prayerTimeStr);
+        }
+      }
+    });
+  }, 10000); // 10 saniyede bir kontrol
+}
+
+// Alarm satırlarını render et
+function renderAlarmRows(tf){
+  const ALL_PRAYERS = [
+    {key:'imsak',  name:'İmsak',  icon:'🌙'},
+    {key:'fajr',   name:'Sabah',  icon:'🌅'},
+    {key:'dhuhr',  name:'Öğle',   icon:'🌤'},
+    {key:'asr',    name:'İkindi', icon:'🌇'},
+    {key:'maghrib',name:'Akşam',  icon:'🌆'},
+    {key:'isha',   name:'Yatsı',  icon:'🌙'},
+  ];
+  
+  _alarmTimes = {};
+  ALL_PRAYERS.forEach(p=>{
+    _alarmTimes[p.key] = {time: tf[p.key], name: p.name};
+  });
+  
+  const state = getAlarmState();
+  const container = document.getElementById('alarmRows');
+  container.innerHTML = '';
+  
+  ALL_PRAYERS.forEach(p=>{
+    const t = tf[p.key];
+    const [ph, pm] = t.split(':').map(Number);
+    const am = ph * 60 + pm - 20;
+    const ah = Math.floor(((am%1440)+1440)%1440/60);
+    const amm = ((am%1440)+1440)%1440%60;
+    const alarmTime = String(ah).padStart(2,'0')+':'+String(amm).padStart(2,'0');
+    
+    const checked = state[p.key] !== false; // varsayılan açık
+    const row = document.createElement('div');
+    row.className = 'alarm-row';
+    row.innerHTML = `
+      <div class="alarm-row-left">
+        <span class="alarm-icon">${p.icon}</span>
+        <div>
+          <div class="alarm-name">${p.name}</div>
+          <div class="alarm-time">Alarm: ${alarmTime} (vakit: ${t})</div>
+        </div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="alarm_${p.key}" ${checked?'checked':''}>
+        <span class="toggle-slider"></span>
+      </label>
+    `;
+    container.appendChild(row);
+    
+    document.getElementById('alarm_'+p.key).addEventListener('change', function(){
+      const s = getAlarmState();
+      s[p.key] = this.checked;
+      setAlarmState(s);
+    });
+  });
+  
+  startAlarmChecker();
+}
+
+// Bildirim izni iste
+async function requestNotifPermission(){
+  const note = document.getElementById('alarmNote');
+  if(!('Notification' in window)){
+    note.textContent = '⚠️ Tarayıcınız bildirim desteklemiyor. Ses yine de çalacak.';
+    return;
+  }
+  if(Notification.permission === 'granted'){
+    note.textContent = '✅ Bildirimler açık — ezan alarmı aktif';
+    return;
+  }
+  if(Notification.permission === 'denied'){
+    note.textContent = '⛔ Bildirim izni reddedildi. Ses alarmı çalışmaya devam eder.';
+    return;
+  }
+  const result = await Notification.requestPermission();
+  if(result === 'granted'){
+    note.textContent = '✅ Bildirimler açık — ezan alarmı aktif';
+  } else {
+    note.textContent = '⚠️ Bildirim izni verilmedi. Ses alarmı çalışmaya devam eder.';
+  }
+}
+
+refreshLocation();
+scheduleMidnightRefresh();
+
+// ── End of Ezan Alarm System ──────────────────────────────────────────────
+
+</script>
+</body>
+</html>
